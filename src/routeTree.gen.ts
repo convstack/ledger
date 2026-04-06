@@ -18,6 +18,7 @@ import { Route as ApiPaymentsRouteImport } from './routes/api/payments'
 import { Route as ApiInvoicesRouteImport } from './routes/api/invoices'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiAuditRouteImport } from './routes/api/audit'
+import { Route as ApiWebhooksSubscribersRouteImport } from './routes/api/webhooks/subscribers'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as ApiSubscriptionsIdRouteImport } from './routes/api/subscriptions/$id'
 import { Route as ApiProvidersIdRouteImport } from './routes/api/providers/$id'
@@ -26,6 +27,7 @@ import { Route as ApiMySubscriptionsRouteImport } from './routes/api/my/subscrip
 import { Route as ApiMySubscribeRouteImport } from './routes/api/my/subscribe'
 import { Route as ApiMyInvoicesRouteImport } from './routes/api/my/invoices'
 import { Route as ApiInvoicesIdRouteImport } from './routes/api/invoices/$id'
+import { Route as ApiWebhooksSubscribersIdRouteImport } from './routes/api/webhooks/subscribers/$id'
 import { Route as ApiProvidersIdSettingsRouteImport } from './routes/api/providers/$id/settings'
 import { Route as ApiProvidersIdDeactivateRouteImport } from './routes/api/providers/$id/deactivate'
 import { Route as ApiProvidersIdActivateRouteImport } from './routes/api/providers/$id/activate'
@@ -39,6 +41,8 @@ import { Route as ApiInvoicesIdMarkPaidRouteImport } from './routes/api/invoices
 import { Route as ApiInvoicesIdItemsRouteImport } from './routes/api/invoices/$id/items'
 import { Route as ApiInvoicesIdCancelRouteImport } from './routes/api/invoices/$id/cancel'
 import { Route as ApiInvoicesIdActionsRouteImport } from './routes/api/invoices/$id/actions'
+import { Route as ApiWebhooksSubscribersIdToggleRouteImport } from './routes/api/webhooks/subscribers/$id/toggle'
+import { Route as ApiWebhooksSubscribersIdActionsRouteImport } from './routes/api/webhooks/subscribers/$id/actions'
 import { Route as ApiMySubscriptionsIdCancelRouteImport } from './routes/api/my/subscriptions/$id/cancel'
 import { Route as ApiMyInvoicesIdPayRouteImport } from './routes/api/my/invoices/$id/pay'
 import { Route as ApiMyInvoicesIdItemsRouteImport } from './routes/api/my/invoices/$id/items'
@@ -89,6 +93,11 @@ const ApiAuditRoute = ApiAuditRouteImport.update({
   path: '/api/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhooksSubscribersRoute = ApiWebhooksSubscribersRouteImport.update({
+  id: '/api/webhooks/subscribers',
+  path: '/api/webhooks/subscribers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
   id: '/api/webhooks/stripe',
   path: '/api/webhooks/stripe',
@@ -129,6 +138,12 @@ const ApiInvoicesIdRoute = ApiInvoicesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ApiInvoicesRoute,
 } as any)
+const ApiWebhooksSubscribersIdRoute =
+  ApiWebhooksSubscribersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiWebhooksSubscribersRoute,
+  } as any)
 const ApiProvidersIdSettingsRoute = ApiProvidersIdSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -195,6 +210,18 @@ const ApiInvoicesIdActionsRoute = ApiInvoicesIdActionsRouteImport.update({
   path: '/actions',
   getParentRoute: () => ApiInvoicesIdRoute,
 } as any)
+const ApiWebhooksSubscribersIdToggleRoute =
+  ApiWebhooksSubscribersIdToggleRouteImport.update({
+    id: '/toggle',
+    path: '/toggle',
+    getParentRoute: () => ApiWebhooksSubscribersIdRoute,
+  } as any)
+const ApiWebhooksSubscribersIdActionsRoute =
+  ApiWebhooksSubscribersIdActionsRouteImport.update({
+    id: '/actions',
+    path: '/actions',
+    getParentRoute: () => ApiWebhooksSubscribersIdRoute,
+  } as any)
 const ApiMySubscriptionsIdCancelRoute =
   ApiMySubscriptionsIdCancelRouteImport.update({
     id: '/$id/cancel',
@@ -235,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/api/providers/$id': typeof ApiProvidersIdRouteWithChildren
   '/api/subscriptions/$id': typeof ApiSubscriptionsIdRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/webhooks/subscribers': typeof ApiWebhooksSubscribersRouteWithChildren
   '/api/invoices/$id/actions': typeof ApiInvoicesIdActionsRoute
   '/api/invoices/$id/cancel': typeof ApiInvoicesIdCancelRoute
   '/api/invoices/$id/items': typeof ApiInvoicesIdItemsRoute
@@ -248,10 +276,13 @@ export interface FileRoutesByFullPath {
   '/api/providers/$id/activate': typeof ApiProvidersIdActivateRoute
   '/api/providers/$id/deactivate': typeof ApiProvidersIdDeactivateRoute
   '/api/providers/$id/settings': typeof ApiProvidersIdSettingsRoute
+  '/api/webhooks/subscribers/$id': typeof ApiWebhooksSubscribersIdRouteWithChildren
   '/api/my/invoices/$id/actions': typeof ApiMyInvoicesIdActionsRoute
   '/api/my/invoices/$id/items': typeof ApiMyInvoicesIdItemsRoute
   '/api/my/invoices/$id/pay': typeof ApiMyInvoicesIdPayRoute
   '/api/my/subscriptions/$id/cancel': typeof ApiMySubscriptionsIdCancelRoute
+  '/api/webhooks/subscribers/$id/actions': typeof ApiWebhooksSubscribersIdActionsRoute
+  '/api/webhooks/subscribers/$id/toggle': typeof ApiWebhooksSubscribersIdToggleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -271,6 +302,7 @@ export interface FileRoutesByTo {
   '/api/providers/$id': typeof ApiProvidersIdRouteWithChildren
   '/api/subscriptions/$id': typeof ApiSubscriptionsIdRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/webhooks/subscribers': typeof ApiWebhooksSubscribersRouteWithChildren
   '/api/invoices/$id/actions': typeof ApiInvoicesIdActionsRoute
   '/api/invoices/$id/cancel': typeof ApiInvoicesIdCancelRoute
   '/api/invoices/$id/items': typeof ApiInvoicesIdItemsRoute
@@ -284,10 +316,13 @@ export interface FileRoutesByTo {
   '/api/providers/$id/activate': typeof ApiProvidersIdActivateRoute
   '/api/providers/$id/deactivate': typeof ApiProvidersIdDeactivateRoute
   '/api/providers/$id/settings': typeof ApiProvidersIdSettingsRoute
+  '/api/webhooks/subscribers/$id': typeof ApiWebhooksSubscribersIdRouteWithChildren
   '/api/my/invoices/$id/actions': typeof ApiMyInvoicesIdActionsRoute
   '/api/my/invoices/$id/items': typeof ApiMyInvoicesIdItemsRoute
   '/api/my/invoices/$id/pay': typeof ApiMyInvoicesIdPayRoute
   '/api/my/subscriptions/$id/cancel': typeof ApiMySubscriptionsIdCancelRoute
+  '/api/webhooks/subscribers/$id/actions': typeof ApiWebhooksSubscribersIdActionsRoute
+  '/api/webhooks/subscribers/$id/toggle': typeof ApiWebhooksSubscribersIdToggleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -308,6 +343,7 @@ export interface FileRoutesById {
   '/api/providers/$id': typeof ApiProvidersIdRouteWithChildren
   '/api/subscriptions/$id': typeof ApiSubscriptionsIdRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/webhooks/subscribers': typeof ApiWebhooksSubscribersRouteWithChildren
   '/api/invoices/$id/actions': typeof ApiInvoicesIdActionsRoute
   '/api/invoices/$id/cancel': typeof ApiInvoicesIdCancelRoute
   '/api/invoices/$id/items': typeof ApiInvoicesIdItemsRoute
@@ -321,10 +357,13 @@ export interface FileRoutesById {
   '/api/providers/$id/activate': typeof ApiProvidersIdActivateRoute
   '/api/providers/$id/deactivate': typeof ApiProvidersIdDeactivateRoute
   '/api/providers/$id/settings': typeof ApiProvidersIdSettingsRoute
+  '/api/webhooks/subscribers/$id': typeof ApiWebhooksSubscribersIdRouteWithChildren
   '/api/my/invoices/$id/actions': typeof ApiMyInvoicesIdActionsRoute
   '/api/my/invoices/$id/items': typeof ApiMyInvoicesIdItemsRoute
   '/api/my/invoices/$id/pay': typeof ApiMyInvoicesIdPayRoute
   '/api/my/subscriptions/$id/cancel': typeof ApiMySubscriptionsIdCancelRoute
+  '/api/webhooks/subscribers/$id/actions': typeof ApiWebhooksSubscribersIdActionsRoute
+  '/api/webhooks/subscribers/$id/toggle': typeof ApiWebhooksSubscribersIdToggleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -346,6 +385,7 @@ export interface FileRouteTypes {
     | '/api/providers/$id'
     | '/api/subscriptions/$id'
     | '/api/webhooks/stripe'
+    | '/api/webhooks/subscribers'
     | '/api/invoices/$id/actions'
     | '/api/invoices/$id/cancel'
     | '/api/invoices/$id/items'
@@ -359,10 +399,13 @@ export interface FileRouteTypes {
     | '/api/providers/$id/activate'
     | '/api/providers/$id/deactivate'
     | '/api/providers/$id/settings'
+    | '/api/webhooks/subscribers/$id'
     | '/api/my/invoices/$id/actions'
     | '/api/my/invoices/$id/items'
     | '/api/my/invoices/$id/pay'
     | '/api/my/subscriptions/$id/cancel'
+    | '/api/webhooks/subscribers/$id/actions'
+    | '/api/webhooks/subscribers/$id/toggle'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -382,6 +425,7 @@ export interface FileRouteTypes {
     | '/api/providers/$id'
     | '/api/subscriptions/$id'
     | '/api/webhooks/stripe'
+    | '/api/webhooks/subscribers'
     | '/api/invoices/$id/actions'
     | '/api/invoices/$id/cancel'
     | '/api/invoices/$id/items'
@@ -395,10 +439,13 @@ export interface FileRouteTypes {
     | '/api/providers/$id/activate'
     | '/api/providers/$id/deactivate'
     | '/api/providers/$id/settings'
+    | '/api/webhooks/subscribers/$id'
     | '/api/my/invoices/$id/actions'
     | '/api/my/invoices/$id/items'
     | '/api/my/invoices/$id/pay'
     | '/api/my/subscriptions/$id/cancel'
+    | '/api/webhooks/subscribers/$id/actions'
+    | '/api/webhooks/subscribers/$id/toggle'
   id:
     | '__root__'
     | '/'
@@ -418,6 +465,7 @@ export interface FileRouteTypes {
     | '/api/providers/$id'
     | '/api/subscriptions/$id'
     | '/api/webhooks/stripe'
+    | '/api/webhooks/subscribers'
     | '/api/invoices/$id/actions'
     | '/api/invoices/$id/cancel'
     | '/api/invoices/$id/items'
@@ -431,10 +479,13 @@ export interface FileRouteTypes {
     | '/api/providers/$id/activate'
     | '/api/providers/$id/deactivate'
     | '/api/providers/$id/settings'
+    | '/api/webhooks/subscribers/$id'
     | '/api/my/invoices/$id/actions'
     | '/api/my/invoices/$id/items'
     | '/api/my/invoices/$id/pay'
     | '/api/my/subscriptions/$id/cancel'
+    | '/api/webhooks/subscribers/$id/actions'
+    | '/api/webhooks/subscribers/$id/toggle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -451,6 +502,7 @@ export interface RootRouteChildren {
   ApiMySubscribeRoute: typeof ApiMySubscribeRoute
   ApiMySubscriptionsRoute: typeof ApiMySubscriptionsRouteWithChildren
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
+  ApiWebhooksSubscribersRoute: typeof ApiWebhooksSubscribersRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -518,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhooks/subscribers': {
+      id: '/api/webhooks/subscribers'
+      path: '/api/webhooks/subscribers'
+      fullPath: '/api/webhooks/subscribers'
+      preLoaderRoute: typeof ApiWebhooksSubscribersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/webhooks/stripe': {
       id: '/api/webhooks/stripe'
       path: '/api/webhooks/stripe'
@@ -573,6 +632,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/invoices/$id'
       preLoaderRoute: typeof ApiInvoicesIdRouteImport
       parentRoute: typeof ApiInvoicesRoute
+    }
+    '/api/webhooks/subscribers/$id': {
+      id: '/api/webhooks/subscribers/$id'
+      path: '/$id'
+      fullPath: '/api/webhooks/subscribers/$id'
+      preLoaderRoute: typeof ApiWebhooksSubscribersIdRouteImport
+      parentRoute: typeof ApiWebhooksSubscribersRoute
     }
     '/api/providers/$id/settings': {
       id: '/api/providers/$id/settings'
@@ -664,6 +730,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/invoices/$id/actions'
       preLoaderRoute: typeof ApiInvoicesIdActionsRouteImport
       parentRoute: typeof ApiInvoicesIdRoute
+    }
+    '/api/webhooks/subscribers/$id/toggle': {
+      id: '/api/webhooks/subscribers/$id/toggle'
+      path: '/toggle'
+      fullPath: '/api/webhooks/subscribers/$id/toggle'
+      preLoaderRoute: typeof ApiWebhooksSubscribersIdToggleRouteImport
+      parentRoute: typeof ApiWebhooksSubscribersIdRoute
+    }
+    '/api/webhooks/subscribers/$id/actions': {
+      id: '/api/webhooks/subscribers/$id/actions'
+      path: '/actions'
+      fullPath: '/api/webhooks/subscribers/$id/actions'
+      preLoaderRoute: typeof ApiWebhooksSubscribersIdActionsRouteImport
+      parentRoute: typeof ApiWebhooksSubscribersIdRoute
     }
     '/api/my/subscriptions/$id/cancel': {
       id: '/api/my/subscriptions/$id/cancel'
@@ -836,6 +916,36 @@ const ApiMySubscriptionsRouteChildren: ApiMySubscriptionsRouteChildren = {
 const ApiMySubscriptionsRouteWithChildren =
   ApiMySubscriptionsRoute._addFileChildren(ApiMySubscriptionsRouteChildren)
 
+interface ApiWebhooksSubscribersIdRouteChildren {
+  ApiWebhooksSubscribersIdActionsRoute: typeof ApiWebhooksSubscribersIdActionsRoute
+  ApiWebhooksSubscribersIdToggleRoute: typeof ApiWebhooksSubscribersIdToggleRoute
+}
+
+const ApiWebhooksSubscribersIdRouteChildren: ApiWebhooksSubscribersIdRouteChildren =
+  {
+    ApiWebhooksSubscribersIdActionsRoute: ApiWebhooksSubscribersIdActionsRoute,
+    ApiWebhooksSubscribersIdToggleRoute: ApiWebhooksSubscribersIdToggleRoute,
+  }
+
+const ApiWebhooksSubscribersIdRouteWithChildren =
+  ApiWebhooksSubscribersIdRoute._addFileChildren(
+    ApiWebhooksSubscribersIdRouteChildren,
+  )
+
+interface ApiWebhooksSubscribersRouteChildren {
+  ApiWebhooksSubscribersIdRoute: typeof ApiWebhooksSubscribersIdRouteWithChildren
+}
+
+const ApiWebhooksSubscribersRouteChildren: ApiWebhooksSubscribersRouteChildren =
+  {
+    ApiWebhooksSubscribersIdRoute: ApiWebhooksSubscribersIdRouteWithChildren,
+  }
+
+const ApiWebhooksSubscribersRouteWithChildren =
+  ApiWebhooksSubscribersRoute._addFileChildren(
+    ApiWebhooksSubscribersRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiAuditRoute: ApiAuditRoute,
@@ -850,6 +960,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMySubscribeRoute: ApiMySubscribeRoute,
   ApiMySubscriptionsRoute: ApiMySubscriptionsRouteWithChildren,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
+  ApiWebhooksSubscribersRoute: ApiWebhooksSubscribersRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

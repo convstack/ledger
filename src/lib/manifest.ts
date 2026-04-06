@@ -449,6 +449,106 @@ export function buildLedgerManifest(
 				},
 			],
 		},
+		// Webhook subscribers
+		{
+			path: "/webhooks/subscribers",
+			title: "Webhook Subscribers",
+			layout: "default",
+			showBack: true,
+			requiredPermission: "ledger:manage",
+			sections: [
+				{
+					type: "data-table",
+					endpoint: "/api/webhooks/subscribers",
+					config: {
+						rowLink: "/webhooks/subscribers/:id",
+						createLink: "/webhooks/subscribers/new",
+						createLabel: "Add Subscriber",
+					},
+				},
+			],
+		},
+		{
+			path: "/webhooks/subscribers/new",
+			title: "Add Webhook Subscriber",
+			layout: "default",
+			showBack: true,
+			requiredPermission: "ledger:manage",
+			sections: [
+				{
+					type: "form",
+					endpoint: "/api/webhooks/subscribers",
+					config: {
+						fields: [
+							{
+								key: "name",
+								label: "Name",
+								type: "text",
+								required: true,
+								placeholder: "e.g. Hosting Panel",
+							},
+							{
+								key: "url",
+								label: "Callback URL",
+								type: "text",
+								required: true,
+								placeholder: "https://example.com/api/webhooks/ledger",
+							},
+							{
+								key: "secret",
+								label: "Secret (auto-generated if empty)",
+								type: "password",
+								placeholder: "leave empty to auto-generate",
+							},
+							{
+								key: "events",
+								label: "Events (comma-separated, or * for all)",
+								type: "text",
+								placeholder: "subscription.paid, subscription.cancelled",
+							},
+						],
+						submitLabel: "Create Subscriber",
+					},
+				},
+			],
+		},
+		{
+			path: "/webhooks/subscribers/:id",
+			title: "Webhook Subscriber",
+			layout: "default",
+			showBack: true,
+			requiredPermission: "ledger:manage",
+			sections: [
+				{
+					type: "detail",
+					endpoint: "/api/webhooks/subscribers/:id",
+					config: { title: "Subscriber Details" },
+				},
+				{
+					type: "form",
+					endpoint: "/api/webhooks/subscribers/:id",
+					config: {
+						title: "Edit Subscriber",
+						method: "PUT",
+						fields: [
+							{ key: "name", label: "Name", type: "text" },
+							{ key: "url", label: "Callback URL", type: "text" },
+							{
+								key: "events",
+								label: "Events (comma-separated)",
+								type: "text",
+							},
+						],
+						submitLabel: "Save",
+					},
+				},
+				{
+					type: "action-bar",
+					endpoint: "/api/webhooks/subscribers/:id/actions",
+					config: {},
+				},
+			],
+		},
 	];
 
 	// Conditionally add subscription pages
@@ -502,6 +602,7 @@ export function buildLedgerManifest(
 		{ label: "All Invoices", path: "/invoices", icon: "file-text" },
 		{ label: "Payments", path: "/payments", icon: "credit-card" },
 		{ label: "Audit Log", path: "/audit", icon: "scroll-text" },
+		{ label: "Webhooks", path: "/webhooks/subscribers", icon: "webhook" },
 		{ label: "Settings", path: "/settings", icon: "sliders-horizontal" },
 	];
 

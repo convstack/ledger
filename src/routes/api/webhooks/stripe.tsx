@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { invoice, ledgerAuditLog, payment, subscription } from "~/db/schema";
 import { getActiveProvider } from "~/lib/providers/registry";
+import { dispatchWebhook } from "~/lib/webhook-dispatcher";
 
 export const Route = createFileRoute("/api/webhooks/stripe")({
 	server: {
@@ -68,6 +69,11 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 							details: { method: "stripe_checkout" },
 							createdAt: now,
 						});
+
+						dispatchWebhook("subscription.paid", {
+							invoiceId: result.invoiceId,
+							userId: inv.userId,
+						});
 					}
 				}
 
@@ -84,6 +90,10 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 						entityId: result.invoiceId,
 						userId: "stripe-webhook",
 						createdAt: now,
+					});
+
+					dispatchWebhook("subscription.payment_failed", {
+						invoiceId: result.invoiceId,
 					});
 				}
 
@@ -105,6 +115,11 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 						.update(subscription)
 						.set(updates)
 						.where(eq(subscription.providerRef, result.subscriptionId));
+
+					dispatchWebhook("subscription.updated", {
+						subscriptionId: result.subscriptionId,
+						status: (data.status as string) || "unknown",
+					});
 				}
 
 				if (result.action === "subscription_deleted" && result.subscriptionId) {
@@ -124,6 +139,10 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 						entityId: result.subscriptionId,
 						userId: "stripe-webhook",
 						createdAt: now,
+					});
+
+					dispatchWebhook("subscription.cancelled", {
+						subscriptionId: result.subscriptionId,
 					});
 				}
 
