@@ -8,8 +8,8 @@
  * and methods from the handler declarations. No manual annotations needed.
  */
 
-import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { join, relative, sep } from "node:path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { join, relative } from "node:path";
 
 const ROUTES_DIR = join(process.cwd(), "src", "routes", "api");
 const OUTPUT = join(process.cwd(), "public", "openapi.json");
@@ -106,7 +106,10 @@ function generateSpec(): object {
 		}
 
 		for (const method of methods) {
-			const operationId = `${method}_${apiPath.replace(/[/{}\-]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "")}`;
+			const operationId = `${method}_${apiPath
+				.replace(/[/{}-]/g, "_")
+				.replace(/_+/g, "_")
+				.replace(/^_|_$/g, "")}`;
 
 			const operation: PathItem[string] = {
 				operationId,
