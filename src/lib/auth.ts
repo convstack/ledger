@@ -35,12 +35,59 @@ export function requireLedgerManage(user: RequestUser | null): Response | null {
 	return requireStaff(user);
 }
 
+// Cache verified service keys for 5 minutes
+const verifiedKeys = new Map<string, { valid: boolean; expires: number }>();
+const KEY_CACHE_TTL = 5 * 60 * 1000;
+
 /**
- * Check if request has a valid ServiceKey.
- * For service-to-service calls, the Authorization header
- * is forwarded to Lanyard for verification.
+ * Validate a ServiceKey by forwarding it to Lanyard's heartbeat endpoint.
+ * Caches results for 5 minutes to avoid hitting Lanyard on every request.
  */
-export function isServiceKeyRequest(request: Request): boolean {
+export async function validateServiceKey(request: Request): Promise<boolean> {
 	const auth = request.headers.get("authorization");
-	return auth?.startsWith("ServiceKey ") ?? false;
+	if (!auth?.startsWith("ServiceKey ")) return false;
+
+	const cached = verifiedKeys.get(auth);
+	if (cached && cached.expires > Date.now()) {
+		return cached.valid;
+	}
+
+	const lanyardUrl = process.env.LANYARD_URL || "http://localhost:3000";
+
+	try {
+		const res = await fetch(`${lanyardUrl}/api/services/heartbeat`, {
+			method: "POST",
+			headers: {
+				Authorization: auth,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ status: "healthy" }),
+			signal: AbortSignal.timeout(3000),
+		});
+
+		const valid = res.ok;
+		verifiedKeys.set(auth, {
+			valid,
+			expires: Date.now() + KEY_CACHE_TTL,
+		});
+		return valid;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Require a valid ServiceKey. Returns an error Response if invalid, null if valid.
+ */
+export async function requireServiceKey(
+	request: Request,
+): Promise<Response | null> {
+	const valid = await validateServiceKey(request);
+	if (!valid) {
+		return new Response(
+			JSON.stringify({ error: "Invalid or missing ServiceKey" }),
+			{ status: 401, headers: { "Content-Type": "application/json" } },
+		);
+	}
+	return null;
 }

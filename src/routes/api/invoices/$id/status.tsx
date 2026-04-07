@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "~/db";
 import { invoice } from "~/db/schema";
-import { isServiceKeyRequest } from "~/lib/auth";
+import { requireServiceKey } from "~/lib/auth";
 
 export const Route = createFileRoute("/api/invoices/$id/status")({
 	server: {
@@ -25,12 +25,8 @@ export const Route = createFileRoute("/api/invoices/$id/status")({
 				request: Request;
 				params: { id: string };
 			}) => {
-				if (!isServiceKeyRequest(request)) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
-				}
+				const keyErr = await requireServiceKey(request);
+				if (keyErr) return keyErr;
 
 				const { eq } = await import("drizzle-orm");
 				const [inv] = await db

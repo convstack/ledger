@@ -4,8 +4,8 @@ import { db } from "~/db";
 import { invoice, ledgerAuditLog, payment } from "~/db/schema";
 import {
 	getRequestUser,
-	isServiceKeyRequest,
 	requireLedgerManage,
+	validateServiceKey,
 } from "~/lib/auth";
 
 export const Route = createFileRoute("/api/invoices/$id/mark-paid")({
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/api/invoices/$id/mark-paid")({
 				params: { id: string };
 			}) => {
 				const user = getRequestUser(request);
-				const isService = isServiceKeyRequest(request);
+				const isService = await validateServiceKey(request);
 
 				if (!isService) {
 					const err = requireLedgerManage(user);
