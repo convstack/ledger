@@ -197,8 +197,10 @@ export class StripeProvider implements LedgerProvider {
 			proration_behavior: params.prorate ? "create_prorations" : "none",
 		});
 
+		const periodEnd = (sub as unknown as { current_period_end: number })
+			.current_period_end;
 		return {
-			currentPeriodEnd: new Date(sub.current_period_end * 1000),
+			currentPeriodEnd: new Date(periodEnd * 1000),
 		};
 	}
 
@@ -264,15 +266,15 @@ export class StripeProvider implements LedgerProvider {
 				break;
 			}
 			case "customer.subscription.updated": {
-				const sub = event.data.object as Stripe.Subscription;
+				const sub = event.data.object as unknown as Record<string, unknown>;
 				return {
 					handled: true,
-					subscriptionId: sub.id,
+					subscriptionId: sub.id as string,
 					action: "subscription_updated",
 					data: {
-						status: sub.status,
-						currentPeriodEnd: sub.current_period_end,
-						cancelAtPeriodEnd: sub.cancel_at_period_end,
+						status: sub.status as string,
+						currentPeriodEnd: sub.current_period_end as number,
+						cancelAtPeriodEnd: sub.cancel_at_period_end as boolean,
 					},
 				};
 			}
@@ -285,18 +287,17 @@ export class StripeProvider implements LedgerProvider {
 				};
 			}
 			case "invoice.payment_succeeded": {
-				const inv = event.data.object as Stripe.Invoice;
-				if (inv.subscription) {
+				const stripeInv = event.data
+					.object as unknown as Record<string, unknown>;
+				const subRef = stripeInv.subscription as string | null;
+				if (subRef) {
 					return {
 						handled: true,
 						action: "subscription_invoice_paid",
 						data: {
-							subscriptionId:
-								typeof inv.subscription === "string"
-									? inv.subscription
-									: inv.subscription.id,
-							amountPaid: inv.amount_paid,
-							currency: inv.currency,
+							subscriptionId: subRef,
+							amountPaid: stripeInv.amount_paid as number,
+							currency: stripeInv.currency as string,
 						},
 					};
 				}

@@ -15,6 +15,7 @@ import { Route as ApiSettingsRouteImport } from './routes/api/settings'
 import { Route as ApiProvidersRouteImport } from './routes/api/providers'
 import { Route as ApiProductsRouteImport } from './routes/api/products'
 import { Route as ApiPaymentsRouteImport } from './routes/api/payments'
+import { Route as ApiOpenapiRouteImport } from './routes/api/openapi'
 import { Route as ApiInvoicesRouteImport } from './routes/api/invoices'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiAuditRouteImport } from './routes/api/audit'
@@ -76,6 +77,11 @@ const ApiProductsRoute = ApiProductsRouteImport.update({
 const ApiPaymentsRoute = ApiPaymentsRouteImport.update({
   id: '/api/payments',
   path: '/api/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOpenapiRoute = ApiOpenapiRouteImport.update({
+  id: '/api/openapi',
+  path: '/api/openapi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiInvoicesRoute = ApiInvoicesRouteImport.update({
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/api/audit': typeof ApiAuditRoute
   '/api/health': typeof ApiHealthRoute
   '/api/invoices': typeof ApiInvoicesRouteWithChildren
+  '/api/openapi': typeof ApiOpenapiRoute
   '/api/payments': typeof ApiPaymentsRoute
   '/api/products': typeof ApiProductsRouteWithChildren
   '/api/providers': typeof ApiProvidersRouteWithChildren
@@ -289,6 +296,7 @@ export interface FileRoutesByTo {
   '/api/audit': typeof ApiAuditRoute
   '/api/health': typeof ApiHealthRoute
   '/api/invoices': typeof ApiInvoicesRouteWithChildren
+  '/api/openapi': typeof ApiOpenapiRoute
   '/api/payments': typeof ApiPaymentsRoute
   '/api/products': typeof ApiProductsRouteWithChildren
   '/api/providers': typeof ApiProvidersRouteWithChildren
@@ -330,6 +338,7 @@ export interface FileRoutesById {
   '/api/audit': typeof ApiAuditRoute
   '/api/health': typeof ApiHealthRoute
   '/api/invoices': typeof ApiInvoicesRouteWithChildren
+  '/api/openapi': typeof ApiOpenapiRoute
   '/api/payments': typeof ApiPaymentsRoute
   '/api/products': typeof ApiProductsRouteWithChildren
   '/api/providers': typeof ApiProvidersRouteWithChildren
@@ -372,6 +381,7 @@ export interface FileRouteTypes {
     | '/api/audit'
     | '/api/health'
     | '/api/invoices'
+    | '/api/openapi'
     | '/api/payments'
     | '/api/products'
     | '/api/providers'
@@ -412,6 +422,7 @@ export interface FileRouteTypes {
     | '/api/audit'
     | '/api/health'
     | '/api/invoices'
+    | '/api/openapi'
     | '/api/payments'
     | '/api/products'
     | '/api/providers'
@@ -452,6 +463,7 @@ export interface FileRouteTypes {
     | '/api/audit'
     | '/api/health'
     | '/api/invoices'
+    | '/api/openapi'
     | '/api/payments'
     | '/api/products'
     | '/api/providers'
@@ -493,6 +505,7 @@ export interface RootRouteChildren {
   ApiAuditRoute: typeof ApiAuditRoute
   ApiHealthRoute: typeof ApiHealthRoute
   ApiInvoicesRoute: typeof ApiInvoicesRouteWithChildren
+  ApiOpenapiRoute: typeof ApiOpenapiRoute
   ApiPaymentsRoute: typeof ApiPaymentsRoute
   ApiProductsRoute: typeof ApiProductsRouteWithChildren
   ApiProvidersRoute: typeof ApiProvidersRouteWithChildren
@@ -547,6 +560,13 @@ declare module '@tanstack/react-router' {
       path: '/api/payments'
       fullPath: '/api/payments'
       preLoaderRoute: typeof ApiPaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/openapi': {
+      id: '/api/openapi'
+      path: '/api/openapi'
+      fullPath: '/api/openapi'
+      preLoaderRoute: typeof ApiOpenapiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/invoices': {
@@ -951,6 +971,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuditRoute: ApiAuditRoute,
   ApiHealthRoute: ApiHealthRoute,
   ApiInvoicesRoute: ApiInvoicesRouteWithChildren,
+  ApiOpenapiRoute: ApiOpenapiRoute,
   ApiPaymentsRoute: ApiPaymentsRoute,
   ApiProductsRoute: ApiProductsRouteWithChildren,
   ApiProvidersRoute: ApiProvidersRouteWithChildren,

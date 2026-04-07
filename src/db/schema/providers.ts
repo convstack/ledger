@@ -11,7 +11,7 @@ export const ledgerProvider = pgTable("ledger_provider", {
 		subscriptions: boolean;
 		checkout: boolean;
 		refunds: boolean;
-		recurringLedger: boolean;
+		recurringBilling: boolean;
 	}>(),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),

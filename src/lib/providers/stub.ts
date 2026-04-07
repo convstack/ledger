@@ -16,7 +16,7 @@ export class StubProvider implements LedgerProvider {
 		subscriptions: false,
 		checkout: false,
 		refunds: false,
-		recurringLedger: false,
+		recurringBilling: false,
 	};
 
 	async initialize(): Promise<void> {}
