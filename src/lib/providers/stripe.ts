@@ -169,9 +169,6 @@ export class StripeProvider implements LedgerProvider {
 					productId: params.productId,
 					prorateOnChange: params.prorateOnChange ? "true" : "false",
 				},
-				proration_behavior: params.prorateOnChange
-					? "create_prorations"
-					: "none",
 			},
 			success_url: `${dashboardUrl}/ledger/my/subscriptions?status=success`,
 			cancel_url: `${dashboardUrl}/ledger/my/subscriptions?status=cancelled`,
