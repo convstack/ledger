@@ -6,6 +6,15 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/products/$id/actions")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get available actions for a product
+			 * auth: staff
+			 * response: 200
+			 *   actions: Array<{label: string, endpoint: string, method: string, variant?: string, confirm?: string}>
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Product not found
+			 */
 			GET: async ({
 				request,
 				params,

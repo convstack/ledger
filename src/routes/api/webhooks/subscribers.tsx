@@ -7,6 +7,16 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/webhooks/subscribers")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: List all webhook subscribers
+			 * auth: staff
+			 * response: 200
+			 *   columns: Array<{key: string, label: string}>
+			 *   rows: Array<{id: string, name: string, url: string, events: string, status: string}>
+			 *   total: number
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			GET: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);
@@ -43,6 +53,25 @@ export const Route = createFileRoute("/api/webhooks/subscribers")({
 				);
 			},
 
+			/** @openapi
+			 * summary: Create a webhook subscriber
+			 * auth: staff
+			 * body:
+			 *   name: string (required) - Subscriber name
+			 *   url: string (required) - Webhook delivery URL
+			 *   secret: string - Signing secret, auto-generated if omitted
+			 *   events: string - Comma-separated event list, defaults to "*"
+			 * response: 201
+			 *   success: boolean
+			 *   id: string
+			 *   secret: string
+			 *   message: string
+			 *   redirect: string
+			 * error: 400 Invalid JSON
+			 * error: 400 Name and URL are required
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			POST: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);

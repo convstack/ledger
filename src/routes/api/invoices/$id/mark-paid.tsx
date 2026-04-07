@@ -11,6 +11,16 @@ import {
 export const Route = createFileRoute("/api/invoices/$id/mark-paid")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Mark an invoice as paid manually
+			 * auth: staff
+			 * response: 200
+			 *   success: boolean
+			 * error: 400 Invoice is already paid
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Invoice not found
+			 */
 			POST: async ({
 				request,
 				params,

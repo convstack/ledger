@@ -8,6 +8,15 @@ import { getActiveProvider } from "~/lib/providers/registry";
 export const Route = createFileRoute("/api/my/subscriptions/$id/cancel")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Cancel own subscription
+			 * auth: user
+			 * response: 200
+			 *   success: boolean
+			 * error: 400 Already cancelled
+			 * error: 401 Unauthorized
+			 * error: 404 Subscription not found
+			 */
 			POST: async ({
 				request,
 				params,

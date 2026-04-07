@@ -7,6 +7,17 @@ import { getActiveProvider } from "~/lib/providers/registry";
 export const Route = createFileRoute("/api/my/invoices/$id/pay")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Initiate payment for own invoice
+			 * auth: user
+			 * response: 200
+			 *   redirect: string
+			 *   message: string
+			 * error: 400 Invoice is not payable
+			 * error: 401 Unauthorized
+			 * error: 404 Invoice not found
+			 * error: 501 No payment provider configured
+			 */
 			POST: async ({
 				request,
 				params,

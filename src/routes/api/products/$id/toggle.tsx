@@ -6,6 +6,15 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/products/$id/toggle")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Toggle product active status
+			 * auth: staff
+			 * response: 200
+			 *   success: boolean
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Product not found
+			 */
 			POST: async ({
 				request,
 				params,

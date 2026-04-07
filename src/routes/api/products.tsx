@@ -7,6 +7,16 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/products")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: List all products
+			 * auth: staff
+			 * response: 200
+			 *   columns: Array<{key: string, label: string}>
+			 *   rows: Array<{id: string, name: string, amount: string, type: string, status: string}>
+			 *   total: number
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			GET: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);
@@ -47,6 +57,25 @@ export const Route = createFileRoute("/api/products")({
 				);
 			},
 
+			/** @openapi
+			 * summary: Create a new product
+			 * auth: staff
+			 * body:
+			 *   name: string (required) - Product name
+			 *   price: string (required) - Price in cents
+			 *   type: string (required) - Product type (e.g. one_time, recurring)
+			 *   description: string - Product description
+			 *   currency: string - Currency code, defaults to EUR
+			 *   interval: string - Billing interval for recurring products
+			 *   prorateOnChange: string - Whether to prorate on plan changes
+			 * response: 201
+			 *   success: boolean
+			 *   redirect: string
+			 * error: 400 Invalid JSON
+			 * error: 400 Validation error
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			POST: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);

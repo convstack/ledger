@@ -8,6 +8,23 @@ import { getActiveProvider } from "~/lib/providers/registry";
 export const Route = createFileRoute("/api/my/subscribe")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Subscribe to a recurring product
+			 * auth: user
+			 * body:
+			 *   productId: string (required) - ID of the recurring product to subscribe to
+			 * response: 201
+			 *   success: boolean
+			 *   id: string
+			 * response: 200
+			 *   redirect: string
+			 * error: 400 Invalid JSON
+			 * error: 400 productId is required
+			 * error: 400 Only recurring products can be subscribed to
+			 * error: 401 Unauthorized
+			 * error: 404 Product not found or inactive
+			 * error: 501 Active provider does not support subscriptions
+			 */
 			POST: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				if (!user) {

@@ -6,6 +6,15 @@ import { getRequestUser } from "~/lib/auth";
 export const Route = createFileRoute("/api/invoices/$id/items")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: List line items for an invoice
+			 * auth: user
+			 * response: 200
+			 *   columns: Array<{key: string, label: string}>
+			 *   rows: Array<{id: string, description: string, quantity: number, unitPrice: string, total: string}>
+			 *   total: number
+			 * error: 401 Unauthorized
+			 */
 			GET: async ({
 				request,
 				params,

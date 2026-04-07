@@ -24,6 +24,13 @@ function getSpec(): string {
 export const Route = createFileRoute("/api/openapi")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get OpenAPI specification
+			 * response: 200
+			 *   openapi: string
+			 *   info: object
+			 *   paths: object
+			 */
 			GET: async () => {
 				return new Response(getSpec(), {
 					status: 200,

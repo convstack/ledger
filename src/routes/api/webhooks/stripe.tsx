@@ -8,6 +8,12 @@ import { dispatchWebhook } from "~/lib/webhook-dispatcher";
 export const Route = createFileRoute("/api/webhooks/stripe")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Handle Stripe webhook events
+			 * response: 200
+			 *   received: boolean
+			 * error: 400 Stripe provider not active
+			 */
 			POST: async ({ request }: { request: Request }) => {
 				const provider = await getActiveProvider();
 				if (

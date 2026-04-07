@@ -9,6 +9,16 @@ import { getProviderByType } from "~/lib/providers/registry";
 export const Route = createFileRoute("/api/providers")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: List all payment providers
+			 * auth: staff
+			 * response: 200
+			 *   columns: Array<{key: string, label: string}>
+			 *   rows: Array<{id: string, name: string, type: string, status: string}>
+			 *   total: number
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			GET: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);
@@ -35,6 +45,21 @@ export const Route = createFileRoute("/api/providers")({
 				);
 			},
 
+			/** @openapi
+			 * summary: Create a new payment provider
+			 * auth: staff
+			 * body:
+			 *   type: string (required) - Provider type (e.g. stripe, manual)
+			 *   name: string (required) - Display name
+			 * response: 201
+			 *   success: boolean
+			 *   redirect: string
+			 * error: 400 Invalid JSON
+			 * error: 400 Type and name are required
+			 * error: 400 Unknown provider type
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			POST: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);

@@ -7,6 +7,15 @@ import { ensureDefaults } from "~/server/services/init";
 export const Route = createFileRoute("/api/settings")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get ledger settings
+			 * auth: staff
+			 * response: 200
+			 *   fields: Array<{key: string, label: string, value: string | number}>
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Settings not found
+			 */
 			GET: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);
@@ -82,6 +91,25 @@ export const Route = createFileRoute("/api/settings")({
 				);
 			},
 
+			/** @openapi
+			 * summary: Update ledger settings
+			 * auth: staff
+			 * body:
+			 *   defaultCurrency: string - Default currency code
+			 *   taxRate: string - Tax rate in basis points
+			 *   taxLabel: string - Tax label
+			 *   dataRetentionDays: string - Data retention period in days
+			 *   smtpHost: string - SMTP host
+			 *   smtpPort: string - SMTP port
+			 *   smtpUser: string - SMTP username
+			 *   smtpPass: string - SMTP password
+			 *   smtpFrom: string - From email address
+			 * response: 200
+			 *   success: boolean
+			 * error: 400 Invalid JSON
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			PUT: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);

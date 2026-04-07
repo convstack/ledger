@@ -6,6 +6,15 @@ import { getRequestUser } from "~/lib/auth";
 export const Route = createFileRoute("/api/my/subscriptions")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: List current user's subscriptions
+			 * auth: user
+			 * response: 200
+			 *   columns: Array<{key: string, label: string}>
+			 *   rows: Array<{id: string, product: string, status: string, renews: string}>
+			 *   total: number
+			 * error: 401 Unauthorized
+			 */
 			GET: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				if (!user) {

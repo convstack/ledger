@@ -8,6 +8,16 @@ import { getActiveProvider } from "~/lib/providers/registry";
 export const Route = createFileRoute("/api/invoices/$id/refund")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Refund a paid invoice
+			 * auth: staff
+			 * response: 200
+			 *   success: boolean
+			 * error: 400 Only paid invoices can be refunded
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Invoice not found
+			 */
 			POST: async ({
 				request,
 				params,

@@ -7,6 +7,16 @@ import { resolveUserNames } from "~/lib/users";
 export const Route = createFileRoute("/api/subscriptions")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: List all subscriptions
+			 * auth: staff
+			 * response: 200
+			 *   columns: Array<{key: string, label: string}>
+			 *   rows: Array<{id: string, user: string, product: string, status: string, currentPeriodEnd: string, createdAt: string}>
+			 *   total: number
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			GET: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);

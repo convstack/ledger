@@ -6,6 +6,16 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/payments")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: List all payments
+			 * auth: staff
+			 * response: 200
+			 *   columns: Array<{key: string, label: string}>
+			 *   rows: Array<{id: string, invoiceId: string, amount: string, status: string, provider: string, method: string, createdAt: string}>
+			 *   total: number
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			GET: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);

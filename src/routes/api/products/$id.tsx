@@ -6,6 +6,15 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/products/$id")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get product details
+			 * auth: staff
+			 * response: 200
+			 *   fields: Array<{key: string, label: string, value: string | number | boolean}>
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Product not found
+			 */
 			GET: async ({
 				request,
 				params,
@@ -64,6 +73,23 @@ export const Route = createFileRoute("/api/products/$id")({
 				);
 			},
 
+			/** @openapi
+			 * summary: Update a product
+			 * auth: staff
+			 * body:
+			 *   name: string - Product name
+			 *   description: string - Product description
+			 *   price: string - Price in cents
+			 *   currency: string - Currency code
+			 *   type: string - Product type
+			 *   interval: string - Billing interval
+			 * response: 200
+			 *   success: boolean
+			 * error: 400 Invalid JSON
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Product not found
+			 */
 			PUT: async ({
 				request,
 				params,

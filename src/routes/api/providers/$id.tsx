@@ -8,6 +8,15 @@ import { getProviderByType } from "~/lib/providers/registry";
 export const Route = createFileRoute("/api/providers/$id")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get provider details
+			 * auth: staff
+			 * response: 200
+			 *   fields: Array<{key: string, label: string, value: string | boolean}>
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Provider not found
+			 */
 			GET: async ({
 				request,
 				params,
@@ -69,6 +78,19 @@ export const Route = createFileRoute("/api/providers/$id")({
 				);
 			},
 
+			/** @openapi
+			 * summary: Update provider name and settings
+			 * auth: staff
+			 * body:
+			 *   name: string - Display name
+			 *   [settingsKey]: string - Provider-specific settings fields
+			 * response: 200
+			 *   success: boolean
+			 * error: 400 Invalid JSON
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Provider not found
+			 */
 			PUT: async ({
 				request,
 				params,

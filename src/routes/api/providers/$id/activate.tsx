@@ -6,6 +6,14 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/providers/$id/activate")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Activate a provider and deactivate all others
+			 * auth: staff
+			 * response: 200
+			 *   success: boolean
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			POST: async ({
 				request,
 				params,

@@ -6,6 +6,15 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/webhooks/subscribers/$id/toggle")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Toggle webhook subscriber active status
+			 * auth: staff
+			 * response: 200
+			 *   success: boolean
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Subscriber not found
+			 */
 			POST: async ({
 				request,
 				params,

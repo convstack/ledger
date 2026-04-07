@@ -7,6 +7,15 @@ import { getActiveProvider } from "~/lib/providers/registry";
 export const Route = createFileRoute("/api/invoices/$id/actions")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get available actions for an invoice
+			 * auth: staff
+			 * response: 200
+			 *   actions: Array<{label: string, endpoint: string, method: string, variant?: string, confirm?: string}>
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Invoice not found
+			 */
 			GET: async ({
 				request,
 				params,

@@ -6,6 +6,15 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/webhooks/subscribers/$id")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get webhook subscriber details
+			 * auth: staff
+			 * response: 200
+			 *   fields: Array<{key: string, label: string, value: string | boolean}>
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Subscriber not found
+			 */
 			GET: async ({
 				request,
 				params,
@@ -68,6 +77,19 @@ export const Route = createFileRoute("/api/webhooks/subscribers/$id")({
 				);
 			},
 
+			/** @openapi
+			 * summary: Update a webhook subscriber
+			 * auth: staff
+			 * body:
+			 *   name: string - Subscriber name
+			 *   url: string - Webhook delivery URL
+			 *   events: string - Comma-separated event list
+			 * response: 200
+			 *   success: boolean
+			 * error: 400 Invalid JSON
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			PUT: async ({
 				request,
 				params,
@@ -114,6 +136,15 @@ export const Route = createFileRoute("/api/webhooks/subscribers/$id")({
 				});
 			},
 
+			/** @openapi
+			 * summary: Delete a webhook subscriber
+			 * auth: staff
+			 * response: 200
+			 *   success: boolean
+			 *   redirect: string
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			DELETE: async ({
 				request,
 				params,

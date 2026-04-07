@@ -7,6 +7,15 @@ import { resolveUserName } from "~/lib/users";
 export const Route = createFileRoute("/api/subscriptions/$id")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get subscription details
+			 * auth: staff
+			 * response: 200
+			 *   fields: Array<{key: string, label: string, value: string | boolean}>
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Subscription not found
+			 */
 			GET: async ({
 				request,
 				params,

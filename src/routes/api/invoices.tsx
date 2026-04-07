@@ -15,6 +15,16 @@ import { resolveUserNames } from "~/lib/users";
 export const Route = createFileRoute("/api/invoices")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: List all invoices
+			 * auth: staff
+			 * response: 200
+			 *   columns: Array<{key: string, label: string}>
+			 *   rows: Array<{id: string, invoiceNumber: string, user: string, status: string, amount: string, createdAt: string}>
+			 *   total: number
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			GET: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const err = requireLedgerManage(user);
@@ -65,6 +75,29 @@ export const Route = createFileRoute("/api/invoices")({
 				);
 			},
 
+			/** @openapi
+			 * summary: Create a new invoice
+			 * auth: staff
+			 * body:
+			 *   userId: string (required) - Target user ID
+			 *   items: Array<{description: string, quantity?: number, unitPrice: number, productId?: string}> (required) - Line items
+			 *   currency: string - Currency code, defaults to EUR
+			 *   notes: string - Invoice notes
+			 *   dueDate: string - ISO date string
+			 *   skipTax: boolean - Skip tax calculation
+			 * response: 201
+			 *   success: boolean
+			 *   id: string
+			 *   invoiceNumber: string
+			 *   status: string
+			 *   subtotal: number
+			 *   tax: number
+			 *   total: number
+			 * error: 400 Invalid JSON
+			 * error: 400 Validation error
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 */
 			POST: async ({ request }: { request: Request }) => {
 				const user = getRequestUser(request);
 				const isService = isServiceKeyRequest(request);

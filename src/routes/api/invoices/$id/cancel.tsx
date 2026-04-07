@@ -7,6 +7,16 @@ import { getRequestUser, requireLedgerManage } from "~/lib/auth";
 export const Route = createFileRoute("/api/invoices/$id/cancel")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Cancel an invoice
+			 * auth: staff
+			 * response: 200
+			 *   success: boolean
+			 * error: 400 Cannot cancel a paid invoice
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Invoice not found
+			 */
 			POST: async ({
 				request,
 				params,

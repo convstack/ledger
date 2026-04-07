@@ -7,6 +7,15 @@ import { resolveUserName } from "~/lib/users";
 export const Route = createFileRoute("/api/invoices/$id")({
 	server: {
 		handlers: {
+			/** @openapi
+			 * summary: Get invoice details
+			 * auth: staff
+			 * response: 200
+			 *   fields: Array<{key: string, label: string, value: string | number}>
+			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 404 Invoice not found
+			 */
 			GET: async ({
 				request,
 				params,
