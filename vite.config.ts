@@ -11,6 +11,18 @@ export default defineConfig({
 		tsconfigPaths: true,
 	},
 	plugins: [
+		{
+			name: "ledger-openapi",
+			buildStart() {
+				import("node:child_process").then(({ execSync }) => {
+					try {
+						execSync("bun run openapi:generate", { stdio: "inherit" });
+					} catch {
+						console.warn("Failed to generate OpenAPI spec");
+					}
+				});
+			},
+		},
 		tailwindcss(),
 		tanstackStart({
 			srcDirectory: "src",

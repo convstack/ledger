@@ -370,6 +370,19 @@
         }
       }
     },
+    "/api/openapi": {
+      "get": {
+        "operationId": "get_api_openapi",
+        "tags": [
+          "openapi"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
     "/api/payments": {
       "get": {
         "operationId": "get_api_payments",
