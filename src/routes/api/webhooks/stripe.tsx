@@ -70,9 +70,21 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 							createdAt: now,
 						});
 
+						// Find the subscription linked to this user for the dispatch
+						const [sub] = await db
+							.select({
+								id: subscription.id,
+								providerRef: subscription.providerRef,
+							})
+							.from(subscription)
+							.where(eq(subscription.userId, inv.userId))
+							.limit(1);
+
 						dispatchWebhook("subscription.paid", {
 							invoiceId: result.invoiceId,
 							userId: inv.userId,
+							subscriptionId: sub?.id || null,
+							providerRef: sub?.providerRef || null,
 						});
 					}
 				}
