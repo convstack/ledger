@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "~/db";
 import { product, subscription } from "~/db/schema";
-import { getRequestUser, requireLedgerManage } from "~/lib/auth";
+import { requireServiceOrStaff } from "~/lib/auth";
 import { resolveUserNames } from "~/lib/users";
 
 export const Route = createFileRoute("/api/subscriptions")({
@@ -18,8 +18,7 @@ export const Route = createFileRoute("/api/subscriptions")({
 			 * error: 403 Forbidden
 			 */
 			GET: async ({ request }: { request: Request }) => {
-				const user = getRequestUser(request);
-				const err = requireLedgerManage(user);
+				const err = await requireServiceOrStaff(request);
 				if (err) return err;
 
 				const { desc, eq } = await import("drizzle-orm");

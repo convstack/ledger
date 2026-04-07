@@ -62,7 +62,7 @@ export const Route = createFileRoute("/api/my/subscribe")({
 					.where(eq(product.id, body.productId))
 					.limit(1);
 
-				if (!prod || !prod.active) {
+				if (!prod?.active) {
 					return new Response(
 						JSON.stringify({ error: "Product not found or inactive" }),
 						{

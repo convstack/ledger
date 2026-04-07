@@ -287,8 +287,10 @@ export class StripeProvider implements LedgerProvider {
 				};
 			}
 			case "invoice.payment_succeeded": {
-				const stripeInv = event.data
-					.object as unknown as Record<string, unknown>;
+				const stripeInv = event.data.object as unknown as Record<
+					string,
+					unknown
+				>;
 				const subRef = stripeInv.subscription as string | null;
 				if (subRef) {
 					return {

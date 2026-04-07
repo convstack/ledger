@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { ledgerProvider } from "~/db/schema";
-import { getRequestUser, requireLedgerManage } from "~/lib/auth";
+import { requireServiceOrStaff } from "~/lib/auth";
 import { encryptSettings } from "~/lib/crypto";
 import { getProviderByType } from "~/lib/providers/registry";
 
@@ -20,8 +20,7 @@ export const Route = createFileRoute("/api/providers")({
 			 * error: 403 Forbidden
 			 */
 			GET: async ({ request }: { request: Request }) => {
-				const user = getRequestUser(request);
-				const err = requireLedgerManage(user);
+				const err = await requireServiceOrStaff(request);
 				if (err) return err;
 
 				const rows = await db.select().from(ledgerProvider);
@@ -61,8 +60,7 @@ export const Route = createFileRoute("/api/providers")({
 			 * error: 403 Forbidden
 			 */
 			POST: async ({ request }: { request: Request }) => {
-				const user = getRequestUser(request);
-				const err = requireLedgerManage(user);
+				const err = await requireServiceOrStaff(request);
 				if (err) return err;
 
 				let body: { type?: string; name?: string };

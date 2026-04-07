@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "~/db";
 import { ledgerSettings } from "~/db/schema";
-import { getRequestUser, requireLedgerManage } from "~/lib/auth";
+import { requireServiceOrStaff } from "~/lib/auth";
 import { ensureDefaults } from "~/server/services/init";
 
 export const Route = createFileRoute("/api/settings")({
@@ -17,8 +17,7 @@ export const Route = createFileRoute("/api/settings")({
 			 * error: 404 Settings not found
 			 */
 			GET: async ({ request }: { request: Request }) => {
-				const user = getRequestUser(request);
-				const err = requireLedgerManage(user);
+				const err = await requireServiceOrStaff(request);
 				if (err) return err;
 
 				await ensureDefaults();
@@ -111,8 +110,7 @@ export const Route = createFileRoute("/api/settings")({
 			 * error: 403 Forbidden
 			 */
 			PUT: async ({ request }: { request: Request }) => {
-				const user = getRequestUser(request);
-				const err = requireLedgerManage(user);
+				const err = await requireServiceOrStaff(request);
 				if (err) return err;
 
 				await ensureDefaults();

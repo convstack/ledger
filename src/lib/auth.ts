@@ -28,13 +28,6 @@ export function requireStaff(user: RequestUser | null): Response | null {
 	return null;
 }
 
-/**
- * Require ledger:manage permission (staff or admin role).
- */
-export function requireLedgerManage(user: RequestUser | null): Response | null {
-	return requireStaff(user);
-}
-
 // Cache verified service keys for 5 minutes
 const verifiedKeys = new Map<string, { valid: boolean; expires: number }>();
 const KEY_CACHE_TTL = 5 * 60 * 1000;
@@ -90,4 +83,20 @@ export async function requireServiceKey(
 		);
 	}
 	return null;
+}
+
+/**
+ * Require either a valid ServiceKey OR a staff/admin user.
+ * Use this on endpoints that both admin users and external services need.
+ */
+export async function requireServiceOrStaff(
+	request: Request,
+): Promise<Response | null> {
+	// Try ServiceKey first
+	const isService = await validateServiceKey(request);
+	if (isService) return null;
+
+	// Fall back to user role check
+	const user = getRequestUser(request);
+	return requireStaff(user);
 }
