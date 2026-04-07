@@ -57,8 +57,8 @@ export const Route = createFileRoute("/api/subscriptions/$id/reactivate")({
 					);
 				}
 
-				// If cancelling at period end, undo the cancellation via Stripe
-				if (sub.providerRef && sub.cancelAtPeriodEnd) {
+				// Undo cancellation via Stripe if applicable
+				if (sub.providerRef) {
 					const provider = await getActiveProvider();
 					if (provider?.type === "stripe") {
 						const Stripe = (await import("stripe")).default;
@@ -73,7 +73,23 @@ export const Route = createFileRoute("/api/subscriptions/$id/reactivate")({
 							const settings = decryptSettings(active.settings);
 							if (settings.secretKey) {
 								const stripe = new Stripe(settings.secretKey);
-								await stripe.subscriptions.update(sub.providerRef, {
+								// Resolve cs_ session ID to real sub_ ID if needed
+								let subRef = sub.providerRef;
+								if (subRef.startsWith("cs_")) {
+									const session =
+										await stripe.checkout.sessions.retrieve(subRef);
+									if (session.subscription) {
+										subRef =
+											typeof session.subscription === "string"
+												? session.subscription
+												: session.subscription.id;
+										await db
+											.update(subscription)
+											.set({ providerRef: subRef })
+											.where(eq(subscription.id, params.id));
+									}
+								}
+								await stripe.subscriptions.update(subRef, {
 									cancel_at_period_end: false,
 								});
 							}

@@ -62,7 +62,34 @@ export const Route = createFileRoute("/api/my/subscriptions/$id/cancel")({
 				// Cancel with the provider if possible
 				const provider = await getActiveProvider();
 				if (provider?.cancelSubscription && sub.providerRef) {
-					await provider.cancelSubscription(sub.providerRef);
+					let subRef = sub.providerRef;
+					// Resolve cs_ checkout session ID to real sub_ subscription ID
+					if (subRef.startsWith("cs_") && provider.type === "stripe") {
+						const Stripe = (await import("stripe")).default;
+						const { decryptSettings } = await import("~/lib/crypto");
+						const { ledgerProvider } = await import("~/db/schema");
+						const [active] = await db
+							.select({ settings: ledgerProvider.settings })
+							.from(ledgerProvider)
+							.where(eq(ledgerProvider.active, true))
+							.limit(1);
+						if (active?.settings) {
+							const settings = decryptSettings(active.settings);
+							const stripe = new Stripe(settings.secretKey);
+							const session = await stripe.checkout.sessions.retrieve(subRef);
+							if (session.subscription) {
+								subRef =
+									typeof session.subscription === "string"
+										? session.subscription
+										: session.subscription.id;
+								await db
+									.update(subscription)
+									.set({ providerRef: subRef })
+									.where(eq(subscription.id, params.id));
+							}
+						}
+					}
+					await provider.cancelSubscription(subRef);
 				}
 
 				const now = new Date();
