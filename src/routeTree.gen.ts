@@ -29,6 +29,9 @@ import { Route as ApiMySubscribeRouteImport } from './routes/api/my/subscribe'
 import { Route as ApiMyInvoicesRouteImport } from './routes/api/my/invoices'
 import { Route as ApiInvoicesIdRouteImport } from './routes/api/invoices/$id'
 import { Route as ApiWebhooksSubscribersIdRouteImport } from './routes/api/webhooks/subscribers/$id'
+import { Route as ApiSubscriptionsIdReactivateRouteImport } from './routes/api/subscriptions/$id/reactivate'
+import { Route as ApiSubscriptionsIdCancelRouteImport } from './routes/api/subscriptions/$id/cancel'
+import { Route as ApiSubscriptionsIdActionsRouteImport } from './routes/api/subscriptions/$id/actions'
 import { Route as ApiProvidersIdSettingsRouteImport } from './routes/api/providers/$id/settings'
 import { Route as ApiProvidersIdDeactivateRouteImport } from './routes/api/providers/$id/deactivate'
 import { Route as ApiProvidersIdActivateRouteImport } from './routes/api/providers/$id/activate'
@@ -151,6 +154,24 @@ const ApiWebhooksSubscribersIdRoute =
     id: '/$id',
     path: '/$id',
     getParentRoute: () => ApiWebhooksSubscribersRoute,
+  } as any)
+const ApiSubscriptionsIdReactivateRoute =
+  ApiSubscriptionsIdReactivateRouteImport.update({
+    id: '/reactivate',
+    path: '/reactivate',
+    getParentRoute: () => ApiSubscriptionsIdRoute,
+  } as any)
+const ApiSubscriptionsIdCancelRoute =
+  ApiSubscriptionsIdCancelRouteImport.update({
+    id: '/cancel',
+    path: '/cancel',
+    getParentRoute: () => ApiSubscriptionsIdRoute,
+  } as any)
+const ApiSubscriptionsIdActionsRoute =
+  ApiSubscriptionsIdActionsRouteImport.update({
+    id: '/actions',
+    path: '/actions',
+    getParentRoute: () => ApiSubscriptionsIdRoute,
   } as any)
 const ApiProvidersIdSettingsRoute = ApiProvidersIdSettingsRouteImport.update({
   id: '/settings',
@@ -280,7 +301,7 @@ export interface FileRoutesByFullPath {
   '/api/my/subscriptions': typeof ApiMySubscriptionsRouteWithChildren
   '/api/products/$id': typeof ApiProductsIdRouteWithChildren
   '/api/providers/$id': typeof ApiProvidersIdRouteWithChildren
-  '/api/subscriptions/$id': typeof ApiSubscriptionsIdRoute
+  '/api/subscriptions/$id': typeof ApiSubscriptionsIdRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/webhooks/subscribers': typeof ApiWebhooksSubscribersRouteWithChildren
   '/api/invoices/$id/actions': typeof ApiInvoicesIdActionsRoute
@@ -297,6 +318,9 @@ export interface FileRoutesByFullPath {
   '/api/providers/$id/activate': typeof ApiProvidersIdActivateRoute
   '/api/providers/$id/deactivate': typeof ApiProvidersIdDeactivateRoute
   '/api/providers/$id/settings': typeof ApiProvidersIdSettingsRoute
+  '/api/subscriptions/$id/actions': typeof ApiSubscriptionsIdActionsRoute
+  '/api/subscriptions/$id/cancel': typeof ApiSubscriptionsIdCancelRoute
+  '/api/subscriptions/$id/reactivate': typeof ApiSubscriptionsIdReactivateRoute
   '/api/webhooks/subscribers/$id': typeof ApiWebhooksSubscribersIdRouteWithChildren
   '/api/my/invoices/$id/actions': typeof ApiMyInvoicesIdActionsRoute
   '/api/my/invoices/$id/items': typeof ApiMyInvoicesIdItemsRoute
@@ -323,7 +347,7 @@ export interface FileRoutesByTo {
   '/api/my/subscriptions': typeof ApiMySubscriptionsRouteWithChildren
   '/api/products/$id': typeof ApiProductsIdRouteWithChildren
   '/api/providers/$id': typeof ApiProvidersIdRouteWithChildren
-  '/api/subscriptions/$id': typeof ApiSubscriptionsIdRoute
+  '/api/subscriptions/$id': typeof ApiSubscriptionsIdRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/webhooks/subscribers': typeof ApiWebhooksSubscribersRouteWithChildren
   '/api/invoices/$id/actions': typeof ApiInvoicesIdActionsRoute
@@ -340,6 +364,9 @@ export interface FileRoutesByTo {
   '/api/providers/$id/activate': typeof ApiProvidersIdActivateRoute
   '/api/providers/$id/deactivate': typeof ApiProvidersIdDeactivateRoute
   '/api/providers/$id/settings': typeof ApiProvidersIdSettingsRoute
+  '/api/subscriptions/$id/actions': typeof ApiSubscriptionsIdActionsRoute
+  '/api/subscriptions/$id/cancel': typeof ApiSubscriptionsIdCancelRoute
+  '/api/subscriptions/$id/reactivate': typeof ApiSubscriptionsIdReactivateRoute
   '/api/webhooks/subscribers/$id': typeof ApiWebhooksSubscribersIdRouteWithChildren
   '/api/my/invoices/$id/actions': typeof ApiMyInvoicesIdActionsRoute
   '/api/my/invoices/$id/items': typeof ApiMyInvoicesIdItemsRoute
@@ -367,7 +394,7 @@ export interface FileRoutesById {
   '/api/my/subscriptions': typeof ApiMySubscriptionsRouteWithChildren
   '/api/products/$id': typeof ApiProductsIdRouteWithChildren
   '/api/providers/$id': typeof ApiProvidersIdRouteWithChildren
-  '/api/subscriptions/$id': typeof ApiSubscriptionsIdRoute
+  '/api/subscriptions/$id': typeof ApiSubscriptionsIdRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/webhooks/subscribers': typeof ApiWebhooksSubscribersRouteWithChildren
   '/api/invoices/$id/actions': typeof ApiInvoicesIdActionsRoute
@@ -384,6 +411,9 @@ export interface FileRoutesById {
   '/api/providers/$id/activate': typeof ApiProvidersIdActivateRoute
   '/api/providers/$id/deactivate': typeof ApiProvidersIdDeactivateRoute
   '/api/providers/$id/settings': typeof ApiProvidersIdSettingsRoute
+  '/api/subscriptions/$id/actions': typeof ApiSubscriptionsIdActionsRoute
+  '/api/subscriptions/$id/cancel': typeof ApiSubscriptionsIdCancelRoute
+  '/api/subscriptions/$id/reactivate': typeof ApiSubscriptionsIdReactivateRoute
   '/api/webhooks/subscribers/$id': typeof ApiWebhooksSubscribersIdRouteWithChildren
   '/api/my/invoices/$id/actions': typeof ApiMyInvoicesIdActionsRoute
   '/api/my/invoices/$id/items': typeof ApiMyInvoicesIdItemsRoute
@@ -429,6 +459,9 @@ export interface FileRouteTypes {
     | '/api/providers/$id/activate'
     | '/api/providers/$id/deactivate'
     | '/api/providers/$id/settings'
+    | '/api/subscriptions/$id/actions'
+    | '/api/subscriptions/$id/cancel'
+    | '/api/subscriptions/$id/reactivate'
     | '/api/webhooks/subscribers/$id'
     | '/api/my/invoices/$id/actions'
     | '/api/my/invoices/$id/items'
@@ -472,6 +505,9 @@ export interface FileRouteTypes {
     | '/api/providers/$id/activate'
     | '/api/providers/$id/deactivate'
     | '/api/providers/$id/settings'
+    | '/api/subscriptions/$id/actions'
+    | '/api/subscriptions/$id/cancel'
+    | '/api/subscriptions/$id/reactivate'
     | '/api/webhooks/subscribers/$id'
     | '/api/my/invoices/$id/actions'
     | '/api/my/invoices/$id/items'
@@ -515,6 +551,9 @@ export interface FileRouteTypes {
     | '/api/providers/$id/activate'
     | '/api/providers/$id/deactivate'
     | '/api/providers/$id/settings'
+    | '/api/subscriptions/$id/actions'
+    | '/api/subscriptions/$id/cancel'
+    | '/api/subscriptions/$id/reactivate'
     | '/api/webhooks/subscribers/$id'
     | '/api/my/invoices/$id/actions'
     | '/api/my/invoices/$id/items'
@@ -684,6 +723,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/webhooks/subscribers/$id'
       preLoaderRoute: typeof ApiWebhooksSubscribersIdRouteImport
       parentRoute: typeof ApiWebhooksSubscribersRoute
+    }
+    '/api/subscriptions/$id/reactivate': {
+      id: '/api/subscriptions/$id/reactivate'
+      path: '/reactivate'
+      fullPath: '/api/subscriptions/$id/reactivate'
+      preLoaderRoute: typeof ApiSubscriptionsIdReactivateRouteImport
+      parentRoute: typeof ApiSubscriptionsIdRoute
+    }
+    '/api/subscriptions/$id/cancel': {
+      id: '/api/subscriptions/$id/cancel'
+      path: '/cancel'
+      fullPath: '/api/subscriptions/$id/cancel'
+      preLoaderRoute: typeof ApiSubscriptionsIdCancelRouteImport
+      parentRoute: typeof ApiSubscriptionsIdRoute
+    }
+    '/api/subscriptions/$id/actions': {
+      id: '/api/subscriptions/$id/actions'
+      path: '/actions'
+      fullPath: '/api/subscriptions/$id/actions'
+      preLoaderRoute: typeof ApiSubscriptionsIdActionsRouteImport
+      parentRoute: typeof ApiSubscriptionsIdRoute
     }
     '/api/providers/$id/settings': {
       id: '/api/providers/$id/settings'
@@ -925,12 +985,27 @@ const ApiProvidersRouteWithChildren = ApiProvidersRoute._addFileChildren(
   ApiProvidersRouteChildren,
 )
 
+interface ApiSubscriptionsIdRouteChildren {
+  ApiSubscriptionsIdActionsRoute: typeof ApiSubscriptionsIdActionsRoute
+  ApiSubscriptionsIdCancelRoute: typeof ApiSubscriptionsIdCancelRoute
+  ApiSubscriptionsIdReactivateRoute: typeof ApiSubscriptionsIdReactivateRoute
+}
+
+const ApiSubscriptionsIdRouteChildren: ApiSubscriptionsIdRouteChildren = {
+  ApiSubscriptionsIdActionsRoute: ApiSubscriptionsIdActionsRoute,
+  ApiSubscriptionsIdCancelRoute: ApiSubscriptionsIdCancelRoute,
+  ApiSubscriptionsIdReactivateRoute: ApiSubscriptionsIdReactivateRoute,
+}
+
+const ApiSubscriptionsIdRouteWithChildren =
+  ApiSubscriptionsIdRoute._addFileChildren(ApiSubscriptionsIdRouteChildren)
+
 interface ApiSubscriptionsRouteChildren {
-  ApiSubscriptionsIdRoute: typeof ApiSubscriptionsIdRoute
+  ApiSubscriptionsIdRoute: typeof ApiSubscriptionsIdRouteWithChildren
 }
 
 const ApiSubscriptionsRouteChildren: ApiSubscriptionsRouteChildren = {
-  ApiSubscriptionsIdRoute: ApiSubscriptionsIdRoute,
+  ApiSubscriptionsIdRoute: ApiSubscriptionsIdRouteWithChildren,
 }
 
 const ApiSubscriptionsRouteWithChildren =

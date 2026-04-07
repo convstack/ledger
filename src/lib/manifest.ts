@@ -589,6 +589,11 @@ export function buildLedgerManifest(
 						endpoint: "/api/subscriptions/:id",
 						config: { title: "Subscription Details" },
 					},
+					{
+						type: "action-bar",
+						endpoint: "/api/subscriptions/:id/actions",
+						config: {},
+					},
 				],
 			},
 			{
