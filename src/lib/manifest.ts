@@ -386,6 +386,15 @@ export function buildLedgerManifest(
 								required: true,
 							},
 							{
+								key: "allowSelfCancel",
+								label: "Allow users to cancel subscriptions",
+								type: "select",
+								options: [
+									{ label: "Yes", value: "true" },
+									{ label: "No", value: "false" },
+								],
+							},
+							{
 								key: "smtpHost",
 								label: "SMTP Host",
 								type: "text",
@@ -569,6 +578,20 @@ export function buildLedgerManifest(
 				],
 			},
 			{
+				path: "/subscriptions/:id",
+				title: "Subscription",
+				layout: "default",
+				showBack: true,
+				requiredPermission: "ledger:manage",
+				sections: [
+					{
+						type: "detail",
+						endpoint: "/api/subscriptions/:id",
+						config: { title: "Subscription Details" },
+					},
+				],
+			},
+			{
 				path: "/my/subscriptions",
 				title: "My Subscriptions",
 				layout: "default",
@@ -576,7 +599,28 @@ export function buildLedgerManifest(
 					{
 						type: "data-table",
 						endpoint: "/api/my/subscriptions",
-						config: { readOnly: true },
+						config: {
+							rowLink: "/my/subscriptions/:id",
+							readOnly: true,
+						},
+					},
+				],
+			},
+			{
+				path: "/my/subscriptions/:id",
+				title: "Subscription",
+				layout: "default",
+				showBack: true,
+				sections: [
+					{
+						type: "detail",
+						endpoint: "/api/my/subscriptions/:id",
+						config: { title: "Subscription Details" },
+					},
+					{
+						type: "action-bar",
+						endpoint: "/api/my/subscriptions/:id/actions",
+						config: {},
 					},
 				],
 			},

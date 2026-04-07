@@ -60,6 +60,11 @@ export const Route = createFileRoute("/api/settings")({
 								value: settings.dataRetentionDays,
 							},
 							{
+								key: "allowSelfCancel",
+								label: "Allow Self-Cancel",
+								value: settings.allowSelfCancel,
+							},
+							{
 								key: "smtpHost",
 								label: "SMTP Host",
 								value: settings.smtpHost || "",
@@ -136,6 +141,9 @@ export const Route = createFileRoute("/api/settings")({
 				if (body.taxLabel) updates.taxLabel = body.taxLabel;
 				if (body.dataRetentionDays)
 					updates.dataRetentionDays = Number(body.dataRetentionDays);
+				if (body.allowSelfCancel !== undefined)
+					updates.allowSelfCancel =
+						body.allowSelfCancel === "true" || body.allowSelfCancel === "on";
 				if (body.smtpHost) updates.smtpHost = body.smtpHost;
 				if (body.smtpPort) updates.smtpPort = Number(body.smtpPort);
 				if (body.smtpUser) updates.smtpUser = body.smtpUser;
