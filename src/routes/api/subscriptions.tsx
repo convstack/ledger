@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "~/db";
-import { product, subscription } from "~/db/schema";
+import { ledgerProvider, product, subscription } from "~/db/schema";
 import { requireServiceOrStaff } from "~/lib/auth";
 import { resolveUserNames } from "~/lib/users";
 
@@ -28,12 +28,17 @@ export const Route = createFileRoute("/api/subscriptions")({
 						id: subscription.id,
 						userId: subscription.userId,
 						productName: product.name,
+						providerName: ledgerProvider.name,
 						status: subscription.status,
 						currentPeriodEnd: subscription.currentPeriodEnd,
 						createdAt: subscription.createdAt,
 					})
 					.from(subscription)
 					.leftJoin(product, eq(subscription.productId, product.id))
+					.leftJoin(
+						ledgerProvider,
+						eq(subscription.providerId, ledgerProvider.id),
+					)
 					.orderBy(desc(subscription.createdAt))
 					.limit(200);
 
@@ -45,6 +50,7 @@ export const Route = createFileRoute("/api/subscriptions")({
 						columns: [
 							{ key: "user", label: "User" },
 							{ key: "product", label: "Product" },
+							{ key: "provider", label: "Provider" },
 							{ key: "status", label: "Status" },
 							{ key: "currentPeriodEnd", label: "Renews" },
 							{ key: "createdAt", label: "Created" },
@@ -52,6 +58,7 @@ export const Route = createFileRoute("/api/subscriptions")({
 						rows: rows.map((r) => ({
 							id: r.id,
 							user: nameMap.get(r.userId) || r.userId,
+							provider: r.providerName || "—",
 							product: r.productName || "—",
 							status: r.status,
 							currentPeriodEnd: r.currentPeriodEnd?.toISOString() || "—",

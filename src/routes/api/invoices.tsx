@@ -29,19 +29,22 @@ export const Route = createFileRoute("/api/invoices")({
 				const err = await requireServiceOrStaff(request);
 				if (err) return err;
 
-				const { desc } = await import("drizzle-orm");
+				const { desc, eq } = await import("drizzle-orm");
+				const { ledgerProvider } = await import("~/db/schema");
 
 				const rows = await db
 					.select({
 						id: invoice.id,
 						invoiceNumber: invoice.invoiceNumber,
 						userId: invoice.userId,
+						providerName: ledgerProvider.name,
 						status: invoice.status,
 						total: invoice.total,
 						currency: invoice.currency,
 						createdAt: invoice.createdAt,
 					})
 					.from(invoice)
+					.leftJoin(ledgerProvider, eq(invoice.providerId, ledgerProvider.id))
 					.orderBy(desc(invoice.createdAt))
 					.limit(200);
 
@@ -53,6 +56,7 @@ export const Route = createFileRoute("/api/invoices")({
 						columns: [
 							{ key: "invoiceNumber", label: "#" },
 							{ key: "user", label: "User" },
+							{ key: "provider", label: "Provider" },
 							{ key: "status", label: "Status" },
 							{ key: "amount", label: "Amount" },
 							{ key: "createdAt", label: "Created" },
@@ -61,6 +65,7 @@ export const Route = createFileRoute("/api/invoices")({
 							id: r.id,
 							invoiceNumber: r.invoiceNumber || "—",
 							user: nameMap.get(r.userId) || r.userId,
+							provider: r.providerName || "—",
 							status: r.status,
 							amount: `${(r.total / 100).toFixed(2)} ${r.currency}`,
 							createdAt: r.createdAt?.toISOString(),
@@ -145,6 +150,15 @@ export const Route = createFileRoute("/api/invoices")({
 				const invoiceNumber = await nextInvoiceNumber();
 				const now = new Date();
 
+				// Tag invoice with active provider
+				const { ledgerProvider: lp } = await import("~/db/schema");
+				const { eq: eqOp } = await import("drizzle-orm");
+				const [activeProvider] = await db
+					.select({ id: lp.id })
+					.from(lp)
+					.where(eqOp(lp.active, true))
+					.limit(1);
+
 				let subtotal = 0;
 				const items = body.items.map((item) => {
 					const qty = item.quantity || 1;
@@ -176,6 +190,7 @@ export const Route = createFileRoute("/api/invoices")({
 					subtotal,
 					tax,
 					total,
+					providerId: activeProvider?.id || null,
 					dueDate: body.dueDate ? new Date(body.dueDate) : null,
 					notes: body.notes || null,
 					createdBy: user?.id || "service",

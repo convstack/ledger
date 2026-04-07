@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { nanoid } from "nanoid";
 import { db } from "~/db";
-import { invoice, ledgerAuditLog, payment, subscription } from "~/db/schema";
+import {
+	invoice,
+	ledgerAuditLog,
+	ledgerProvider,
+	payment,
+	subscription,
+} from "~/db/schema";
 import { getActiveProvider } from "~/lib/providers/registry";
 import { dispatchWebhook } from "~/lib/webhook-dispatcher";
 
@@ -112,6 +118,42 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 
 					dispatchWebhook("subscription.payment_failed", {
 						invoiceId: result.invoiceId,
+					});
+				}
+
+				// Subscription created — update providerRef from checkout session ID to real subscription ID
+				if (result.action === "subscription_created" && result.subscriptionId) {
+					const data = result.data || {};
+					const userId = data.userId as string | undefined;
+					if (userId) {
+						// Find the subscription by userId that still has a cs_ providerRef
+						const [sub] = await db
+							.select({ id: subscription.id })
+							.from(subscription)
+							.where(eq(subscription.userId, userId))
+							.limit(1);
+						if (sub) {
+							// Get the active provider's ID
+							const [activeProvider] = await db
+								.select({ id: ledgerProvider.id })
+								.from(ledgerProvider)
+								.where(eq(ledgerProvider.active, true))
+								.limit(1);
+
+							await db
+								.update(subscription)
+								.set({
+									providerRef: result.subscriptionId,
+									providerId: activeProvider?.id || null,
+									updatedAt: now,
+								})
+								.where(eq(subscription.id, sub.id));
+						}
+					}
+
+					dispatchWebhook("subscription.created", {
+						subscriptionId: result.subscriptionId,
+						userId: data.userId,
 					});
 				}
 
