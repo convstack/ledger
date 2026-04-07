@@ -1,0 +1,1 @@
+ALTER TABLE "ledger_settings" ADD COLUMN "allow_self_cancel" boolean DEFAULT true NOT NULL;
