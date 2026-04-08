@@ -16,6 +16,7 @@
 		"openapi:generate": "bun run scripts/generate-openapi.ts"
 	},
 	"dependencies": {
+		"@convstack/service-sdk": "../service-sdk",
 		"@tanstack/react-router": "^1.168.2",
 		"@tanstack/react-start": "^1.167.3",
 		"clsx": "^2.1.1",

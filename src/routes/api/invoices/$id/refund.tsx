@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { invoice, ledgerAuditLog, payment } from "~/db/schema";
-import { getRequestUser, requireServiceOrStaff } from "~/lib/auth";
+import { getRequestUser, requireServiceOrPermission } from "~/lib/auth";
 import { getActiveProvider } from "~/lib/providers/registry";
 
 export const Route = createFileRoute("/api/invoices/$id/refund")({
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/api/invoices/$id/refund")({
 				params: { id: string };
 			}) => {
 				const user = getRequestUser(request);
-				const err = await requireServiceOrStaff(request);
+				const err = await requireServiceOrPermission(request, "ledger:manage");
 				if (err) return err;
 
 				const { eq } = await import("drizzle-orm");

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { product } from "~/db/schema";
-import { requireServiceOrStaff } from "~/lib/auth";
+import { requireServiceOrPermission } from "~/lib/auth";
 
 export const Route = createFileRoute("/api/products")({
 	server: {
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/api/products")({
 			 * error: 403 Forbidden
 			 */
 			GET: async ({ request }: { request: Request }) => {
-				const err = await requireServiceOrStaff(request);
+				const err = await requireServiceOrPermission(request, "ledger:manage");
 				if (err) return err;
 
 				const { desc } = await import("drizzle-orm");
@@ -76,7 +76,7 @@ export const Route = createFileRoute("/api/products")({
 			 * error: 403 Forbidden
 			 */
 			POST: async ({ request }: { request: Request }) => {
-				const err = await requireServiceOrStaff(request);
+				const err = await requireServiceOrPermission(request, "ledger:manage");
 				if (err) return err;
 
 				const { getActiveProvider } = await import("~/lib/providers/registry");

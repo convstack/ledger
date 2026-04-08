@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { webhookSubscriber } from "~/db/schema";
-import { requireServiceOrStaff } from "~/lib/auth";
+import { requireServiceOrPermission } from "~/lib/auth";
 
 export const Route = createFileRoute("/api/webhooks/subscribers")({
 	server: {
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/api/webhooks/subscribers")({
 			 * error: 403 Forbidden
 			 */
 			GET: async ({ request }: { request: Request }) => {
-				const err = await requireServiceOrStaff(request);
+				const err = await requireServiceOrPermission(request, "ledger:manage");
 				if (err) return err;
 
 				const { desc } = await import("drizzle-orm");
@@ -72,7 +72,7 @@ export const Route = createFileRoute("/api/webhooks/subscribers")({
 			 * error: 403 Forbidden
 			 */
 			POST: async ({ request }: { request: Request }) => {
-				const err = await requireServiceOrStaff(request);
+				const err = await requireServiceOrPermission(request, "ledger:manage");
 				if (err) return err;
 
 				let body: {

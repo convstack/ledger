@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "~/db";
 import { webhookSubscriber } from "~/db/schema";
-import { requireServiceOrStaff } from "~/lib/auth";
+import { requireServiceOrPermission } from "~/lib/auth";
 
 export const Route = createFileRoute("/api/webhooks/subscribers/$id/toggle")({
 	server: {
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/api/webhooks/subscribers/$id/toggle")({
 				request: Request;
 				params: { id: string };
 			}) => {
-				const err = await requireServiceOrStaff(request);
+				const err = await requireServiceOrPermission(request, "ledger:manage");
 				if (err) return err;
 
 				const { eq } = await import("drizzle-orm");

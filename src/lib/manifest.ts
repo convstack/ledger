@@ -14,10 +14,26 @@ const { version } = JSON.parse(
 export function buildLedgerManifest(
 	capabilities: ProviderCapabilities | null,
 ): UIManifest {
-	const pages: unknown[] = [
-		// Admin overview
+	const pages: UIManifest["pages"] = [
+		// Default landing — my invoices (accessible to all authenticated users)
 		{
 			path: "/",
+			title: "My Invoices",
+			layout: "default",
+			sections: [
+				{
+					type: "data-table",
+					endpoint: "/api/my/invoices",
+					config: {
+						rowLink: "/my/invoices/:id",
+						readOnly: true,
+					},
+				},
+			],
+		},
+		// Admin overview
+		{
+			path: "/overview",
 			title: "Ledger Overview",
 			layout: "default",
 			requiredPermission: "ledger:manage",
@@ -308,22 +324,7 @@ export function buildLedgerManifest(
 				},
 			],
 		},
-		// User-facing: My Invoices
-		{
-			path: "/my/invoices",
-			title: "My Invoices",
-			layout: "default",
-			sections: [
-				{
-					type: "data-table",
-					endpoint: "/api/my/invoices",
-					config: {
-						rowLink: "/my/invoices/:id",
-						readOnly: true,
-					},
-				},
-			],
-		},
+		// User-facing: My Invoice detail
 		{
 			path: "/my/invoices/:id",
 			title: "Invoice",
@@ -633,8 +634,8 @@ export function buildLedgerManifest(
 	}
 
 	const sidebarItems = [
-		{ label: "Overview", path: "/", icon: "layout-dashboard" },
-		{ label: "My Invoices", path: "/my/invoices", icon: "receipt" },
+		{ label: "My Invoices", path: "/", icon: "receipt" },
+		{ label: "Overview", path: "/overview", icon: "layout-dashboard", requiredPermission: "ledger:manage" },
 	];
 
 	if (capabilities?.subscriptions) {
@@ -646,13 +647,13 @@ export function buildLedgerManifest(
 	}
 
 	const sidebarFooter = [
-		{ label: "Providers", path: "/providers", icon: "settings" },
-		{ label: "Products", path: "/products", icon: "package" },
-		{ label: "All Invoices", path: "/invoices", icon: "file-text" },
-		{ label: "Payments", path: "/payments", icon: "credit-card" },
-		{ label: "Audit Log", path: "/audit", icon: "scroll-text" },
-		{ label: "Webhooks", path: "/webhooks/subscribers", icon: "webhook" },
-		{ label: "Settings", path: "/settings", icon: "sliders-horizontal" },
+		{ label: "Providers", path: "/providers", icon: "settings", requiredPermission: "ledger:manage" },
+		{ label: "Products", path: "/products", icon: "package", requiredPermission: "ledger:manage" },
+		{ label: "All Invoices", path: "/invoices", icon: "file-text", requiredPermission: "ledger:manage" },
+		{ label: "Payments", path: "/payments", icon: "credit-card", requiredPermission: "ledger:manage" },
+		{ label: "Audit Log", path: "/audit", icon: "scroll-text", requiredPermission: "ledger:manage" },
+		{ label: "Webhooks", path: "/webhooks/subscribers", icon: "webhook", requiredPermission: "ledger:manage" },
+		{ label: "Settings", path: "/settings", icon: "sliders-horizontal", requiredPermission: "ledger:manage" },
 	];
 
 	if (capabilities?.subscriptions) {
@@ -660,6 +661,7 @@ export function buildLedgerManifest(
 			label: "Subscriptions",
 			path: "/subscriptions",
 			icon: "refresh-cw",
+			requiredPermission: "ledger:manage",
 		});
 	}
 

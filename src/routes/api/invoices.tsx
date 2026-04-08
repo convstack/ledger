@@ -4,7 +4,7 @@ import { db } from "~/db";
 import { invoice, invoiceItem, ledgerAuditLog } from "~/db/schema";
 import {
 	getRequestUser,
-	requireServiceOrStaff,
+	requireServiceOrPermission,
 	validateServiceKey,
 } from "~/lib/auth";
 import { getUserEmail, sendEmail } from "~/lib/email";
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/api/invoices")({
 			 * error: 403 Forbidden
 			 */
 			GET: async ({ request }: { request: Request }) => {
-				const err = await requireServiceOrStaff(request);
+				const err = await requireServiceOrPermission(request, "ledger:manage");
 				if (err) return err;
 
 				const { desc, eq } = await import("drizzle-orm");
@@ -107,7 +107,10 @@ export const Route = createFileRoute("/api/invoices")({
 				const isService = await validateServiceKey(request);
 
 				if (!isService) {
-					const err = await requireServiceOrStaff(request);
+					const err = await requireServiceOrPermission(
+						request,
+						"ledger:manage",
+					);
 					if (err) return err;
 				}
 
