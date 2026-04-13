@@ -5,7 +5,7 @@
     "": {
       "name": "@convention/billing",
       "dependencies": {
-        "@convstack/service-sdk": "^0.1.0",
+        "@convstack/service-sdk": "^0.2.0",
         "@tanstack/react-router": "^1.168.2",
         "@tanstack/react-start": "^1.167.3",
         "clsx": "^2.1.1",
@@ -127,7 +127,7 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.4.10", "", { "os": "win32", "cpu": "x64" }, "sha512-aW/JU5GuyH4uxMrNYpoC2kjaHlyJGLgIa3XkhPEZI0uKhZhJZU8BuEyJmvgzSPQNGozBwWjC972RaNdcJ9KyJg=="],
 
-    "@convstack/service-sdk": ["@convstack/service-sdk@0.1.0", "", { "dependencies": { "drizzle-orm": "1.0.0-beta.20-afec359", "pg": "^8.20.0", "zod": "^4.3.6", "zod-to-json-schema": "^3.24.0" } }, "sha512-gKdctm142J9Ci3Bl3tBpltkhTci8/XTZtypPzL8MpAhbrCFdOr2x8USuR91qKJaStNggcmS2E7r207L6shmvQw=="],
+    "@convstack/service-sdk": ["@convstack/service-sdk@0.2.0", "", { "dependencies": { "drizzle-orm": "1.0.0-beta.20-afec359", "pg": "^8.20.0", "zod": "^4.3.6", "zod-to-json-schema": "^3.25.2" } }, "sha512-gLLyvejGLIDjtHz4+a/w/47oL0QOFdN+Sg4RoJlga43516bo7RRMuAAW3q200gBxvqaP4iSdErgOLmoKu8AH6w=="],
 
     "@drizzle-team/brocli": ["@drizzle-team/brocli@0.11.0", "", {}, "sha512-hD3pekGiPg0WPCCGAZmusBBJsDqGUR66Y452YgQsZOnkdQ7ViEPKuyP4huUGEZQefp8g34RRodXYmJ2TbCH+tg=="],
 
