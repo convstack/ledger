@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "@convention/ledger",
+    "title": "@convstack/ledger",
     "version": "0.1.0"
   },
   "paths": {
@@ -67,22 +67,9 @@
         "tags": [
           "health"
         ],
-        "summary": "Health check",
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Successful response"
           }
         }
       }

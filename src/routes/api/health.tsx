@@ -1,19 +1,12 @@
+import { createHandler } from "@convstack/service-sdk/handlers";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/api/health")({
 	server: {
 		handlers: {
-			/** @openapi
-			 * summary: Health check
-			 * response: 200
-			 *   status: string
-			 */
-			GET: async () => {
-				return new Response(JSON.stringify({ status: "ok" }), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				});
-			},
+			GET: createHandler({
+				handler: async () => ({ ok: true, service: "ledger" }),
+			}),
 		},
 	},
 });

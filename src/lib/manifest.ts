@@ -635,7 +635,12 @@ export function buildLedgerManifest(
 
 	const sidebarItems = [
 		{ label: "My Invoices", path: "/", icon: "receipt" },
-		{ label: "Overview", path: "/overview", icon: "layout-dashboard", requiredPermission: "ledger:manage" },
+		{
+			label: "Overview",
+			path: "/overview",
+			icon: "layout-dashboard",
+			requiredPermission: "ledger:manage",
+		},
 	];
 
 	if (capabilities?.subscriptions) {
@@ -647,13 +652,48 @@ export function buildLedgerManifest(
 	}
 
 	const sidebarFooter = [
-		{ label: "Providers", path: "/providers", icon: "settings", requiredPermission: "ledger:manage" },
-		{ label: "Products", path: "/products", icon: "package", requiredPermission: "ledger:manage" },
-		{ label: "All Invoices", path: "/invoices", icon: "file-text", requiredPermission: "ledger:manage" },
-		{ label: "Payments", path: "/payments", icon: "credit-card", requiredPermission: "ledger:manage" },
-		{ label: "Audit Log", path: "/audit", icon: "scroll-text", requiredPermission: "ledger:manage" },
-		{ label: "Webhooks", path: "/webhooks/subscribers", icon: "webhook", requiredPermission: "ledger:manage" },
-		{ label: "Settings", path: "/settings", icon: "sliders-horizontal", requiredPermission: "ledger:manage" },
+		{
+			label: "Providers",
+			path: "/providers",
+			icon: "settings",
+			requiredPermission: "ledger:manage",
+		},
+		{
+			label: "Products",
+			path: "/products",
+			icon: "package",
+			requiredPermission: "ledger:manage",
+		},
+		{
+			label: "All Invoices",
+			path: "/invoices",
+			icon: "file-text",
+			requiredPermission: "ledger:manage",
+		},
+		{
+			label: "Payments",
+			path: "/payments",
+			icon: "credit-card",
+			requiredPermission: "ledger:manage",
+		},
+		{
+			label: "Audit Log",
+			path: "/audit",
+			icon: "scroll-text",
+			requiredPermission: "ledger:manage",
+		},
+		{
+			label: "Webhooks",
+			path: "/webhooks/subscribers",
+			icon: "webhook",
+			requiredPermission: "ledger:manage",
+		},
+		{
+			label: "Settings",
+			path: "/settings",
+			icon: "sliders-horizontal",
+			requiredPermission: "ledger:manage",
+		},
 	];
 
 	if (capabilities?.subscriptions) {
