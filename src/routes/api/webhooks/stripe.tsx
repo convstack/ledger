@@ -102,6 +102,12 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 				}
 
 				if (result.action === "mark_failed" && result.invoiceId) {
+					const [failedInv] = await db
+						.select()
+						.from(invoice)
+						.where(eq(invoice.id, result.invoiceId))
+						.limit(1);
+
 					await db
 						.update(invoice)
 						.set({ status: "failed", updatedAt: now })
@@ -116,8 +122,22 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 						createdAt: now,
 					});
 
+					// Look up the subscription so consumers can map back to the row
+					const [failedSub] = failedInv
+						? await db
+								.select({
+									id: subscription.id,
+									providerRef: subscription.providerRef,
+								})
+								.from(subscription)
+								.where(eq(subscription.userId, failedInv.userId))
+								.limit(1)
+						: [undefined];
+
 					dispatchWebhook("subscription.payment_failed", {
 						invoiceId: result.invoiceId,
+						subscriptionId: failedSub?.id || null,
+						providerRef: failedSub?.providerRef || null,
 					});
 				}
 
@@ -176,13 +196,26 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 						.set(updates)
 						.where(eq(subscription.providerRef, result.subscriptionId));
 
+					const [updatedSub] = await db
+						.select({ id: subscription.id })
+						.from(subscription)
+						.where(eq(subscription.providerRef, result.subscriptionId))
+						.limit(1);
+
 					dispatchWebhook("subscription.updated", {
-						subscriptionId: result.subscriptionId,
+						subscriptionId: updatedSub?.id || null,
+						providerRef: result.subscriptionId,
 						status: (data.status as string) || "unknown",
 					});
 				}
 
 				if (result.action === "subscription_deleted" && result.subscriptionId) {
+					const [deletedSub] = await db
+						.select({ id: subscription.id })
+						.from(subscription)
+						.where(eq(subscription.providerRef, result.subscriptionId))
+						.limit(1);
+
 					await db
 						.update(subscription)
 						.set({
@@ -202,7 +235,8 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 					});
 
 					dispatchWebhook("subscription.cancelled", {
-						subscriptionId: result.subscriptionId,
+						subscriptionId: deletedSub?.id || null,
+						providerRef: result.subscriptionId,
 					});
 				}
 
