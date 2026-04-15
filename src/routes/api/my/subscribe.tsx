@@ -136,6 +136,8 @@ export const Route = createFileRoute("/api/my/subscribe")({
 				if (result.providerRef?.startsWith("cs_")) {
 					return new Response(
 						JSON.stringify({
+							success: true,
+							id: subId,
 							redirect: `${process.env.DASHBOARD_URL || "http://localhost:4000"}/ledger/my/subscriptions`,
 						}),
 						{
