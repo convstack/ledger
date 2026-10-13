@@ -3,23 +3,26 @@ import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { invoice, ledgerAuditLog, payment } from "~/db/schema";
 import {
+	getRequestCaller,
 	getRequestUser,
-	requireServiceOrPermission,
-	validateServiceKey,
+	requireAnyPermission,
 } from "~/lib/auth";
+import { mayActOnInvoice } from "~/lib/invoice-access";
 
 export const Route = createFileRoute("/api/invoices/$id/mark-paid")({
 	server: {
 		handlers: {
 			/** @openapi
 			 * summary: Mark an invoice as paid manually
-			 * auth: staff
+			 * description: Needs ledger:invoices:mark-paid or ledger:manage, held by the user or granted to the calling service under Allowed Callers. The narrow permission only covers invoices the calling service created.
+			 * auth: ledger:invoices:mark-paid or ledger:manage
 			 * response: 200
 			 *   success: boolean
 			 * error: 400 Invoice is already paid
 			 * error: 401 Unauthorized
 			 * error: 403 Forbidden
 			 * error: 404 Invoice not found
+			 * error: 503 Service unavailable while lanyard can't be reached
 			 */
 			POST: async ({
 				request,
@@ -28,16 +31,13 @@ export const Route = createFileRoute("/api/invoices/$id/mark-paid")({
 				request: Request;
 				params: { id: string };
 			}) => {
-				const user = getRequestUser(request);
-				const isService = await validateServiceKey(request);
-
-				if (!isService) {
-					const err = await requireServiceOrPermission(
-						request,
-						"ledger:manage",
-					);
-					if (err) return err;
-				}
+				const err = await requireAnyPermission(request, [
+					"ledger:invoices:mark-paid",
+					"ledger:manage",
+				]);
+				if (err) return err;
+				const user = await getRequestUser(request);
+				const caller = await getRequestCaller(request);
 
 				const { eq } = await import("drizzle-orm");
 
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/api/invoices/$id/mark-paid")({
 					.where(eq(invoice.id, params.id))
 					.limit(1);
 
-				if (!inv) {
+				if (!inv || !(await mayActOnInvoice(request, inv.createdByService))) {
 					return new Response(JSON.stringify({ error: "Invoice not found" }), {
 						status: 404,
 						headers: { "Content-Type": "application/json" },
@@ -85,6 +85,7 @@ export const Route = createFileRoute("/api/invoices/$id/mark-paid")({
 					entityType: "invoice",
 					entityId: params.id,
 					userId: user?.id || "service",
+					caller: caller?.slug ?? null,
 					details: { method: "manual", amount: inv.total },
 					createdAt: now,
 				});

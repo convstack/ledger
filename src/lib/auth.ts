@@ -1,10 +1,9 @@
 export {
+	getRequestCaller,
 	getRequestUser,
 	hasPermission,
 	type RequestUser,
 	requireAnyPermission,
 	requirePermission,
-	requireServiceKey,
-	requireServiceOrPermission,
-	validateServiceKey,
+	requireUser,
 } from "@convstack/service-sdk/auth";

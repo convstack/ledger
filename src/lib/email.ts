@@ -1,3 +1,4 @@
+import { lanyardFetch } from "@convstack/service-sdk/lanyard";
 import { createTransport } from "nodemailer";
 import { db } from "~/db";
 import { ledgerSettings } from "~/db/schema";
@@ -65,14 +66,8 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
  * Resolve a user's email from Lanyard.
  */
 export async function getUserEmail(userId: string): Promise<string | null> {
-	const lanyardUrl = process.env.LANYARD_URL || "http://localhost:3000";
-	const serviceKey = process.env.LANYARD_SERVICE_KEY;
-	if (!serviceKey) return null;
-
 	try {
-		const res = await fetch(`${lanyardUrl}/api/users/${userId}`, {
-			headers: { Authorization: `ServiceKey ${serviceKey}` },
-		});
+		const res = await lanyardFetch(`/api/users/${encodeURIComponent(userId)}`);
 		if (!res.ok) return null;
 		const data = await res.json();
 		return data.email || null;

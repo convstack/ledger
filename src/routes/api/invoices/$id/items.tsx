@@ -1,19 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "~/db";
 import { invoiceItem } from "~/db/schema";
-import { getRequestUser } from "~/lib/auth";
+import { requirePermission } from "~/lib/auth";
 
 export const Route = createFileRoute("/api/invoices/$id/items")({
 	server: {
 		handlers: {
 			/** @openapi
 			 * summary: List line items for an invoice
-			 * auth: user
+			 * auth: ledger:manage
 			 * response: 200
 			 *   columns: Array<{key: string, label: string}>
 			 *   rows: Array<{id: string, description: string, quantity: number, unitPrice: string, total: string}>
 			 *   total: number
 			 * error: 401 Unauthorized
+			 * error: 403 Forbidden
+			 * error: 503 Service unavailable while lanyard can't be reached
 			 */
 			GET: async ({
 				request,
@@ -22,13 +24,8 @@ export const Route = createFileRoute("/api/invoices/$id/items")({
 				request: Request;
 				params: { id: string };
 			}) => {
-				const user = getRequestUser(request);
-				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
-				}
+				const err = await requirePermission(request, "ledger:manage");
+				if (err) return err;
 
 				const { eq } = await import("drizzle-orm");
 

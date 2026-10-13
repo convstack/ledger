@@ -14,7 +14,7 @@ Ledger is a billing and payment service for the ConvStack platform. It provides 
 - **Products** — One-time and recurring products with per-product proration toggle
 - **Subscriptions** — Create, cancel, upgrade/downgrade with proration support (Stripe)
 - **Webhook subscribers** — Fan-out event delivery to multiple external services
-- **Service-to-service API** — Other ConvStack services create invoices via ServiceKey auth
+- **Service-to-service API** - other ConvStack services create invoices, read their status and mark them paid, once an admin grants them the matching permission in Lanyard Admin
 - **GDPR compliance** — Configurable data retention with automatic anonymization
 - **Dynamic manifest** — UI adapts based on active provider capabilities
 
@@ -26,7 +26,7 @@ Ledger is a backend-only REST API — the Dashboard renders all UI from its JSON
 Browser → Dashboard (UI) → API Proxy → Ledger (REST API + PostgreSQL)
                                      → Lanyard (Auth + Service Catalog)
 
-External services → Ledger API (ServiceKey auth)
+External services → Ledger API (service proof from lanyard)
 Stripe → Ledger webhooks (signature-verified)
 Ledger → Webhook subscribers (fan-out)
 ```
@@ -148,28 +148,33 @@ http://localhost:3000/docs
 
 ## Service-to-Service API
 
-Other ConvStack services can create invoices for users:
+Other ConvStack services can create invoices, read their status and mark them paid. A calling service needs a grant: in Lanyard Admin, open Ledger's service page, choose **Allowed Callers**, add the calling service and tick what it may do. Ledger declares one permission per service endpoint:
 
-```bash
-curl -X POST http://localhost:5002/api/invoices \
-  -H "Authorization: ServiceKey sk_svc_..." \
-  -H "Content-Type: application/json" \
-  -d '{
-    "userId": "user-id",
-    "items": [
-      {
-        "description": "Convention Ticket",
-        "unitPrice": 5000,
-        "quantity": 1,
-        "productId": "optional-product-id"
-      }
-    ],
-    "currency": "EUR",
-    "notes": "VIP package upgrade",
-    "dueDate": "2026-05-01T00:00:00Z",
-    "skipTax": false
-  }'
+| Method | Endpoint | Permission |
+|---|---|---|
+| `POST` | `/api/invoices` | `ledger:invoices:create` |
+| `GET` | `/api/invoices/:id/status` | `ledger:invoices:status` |
+| `POST` | `/api/invoices/:id/mark-paid` | `ledger:invoices:mark-paid` |
+
+Each of them also accepts `ledger:manage`, which every other endpoint requires. A narrow grant covers only the invoices that service created. `ledger:manage` covers every invoice, and invoices created before this rule have no creating service, so only `ledger:manage` reaches them. The caller sends a proof lanyard signed for it; `getServiceToken` from `@convstack/service-sdk/service-token` asks lanyard for one and reuses it until shortly before it expires:
+
+```ts
+import { getServiceToken } from "@convstack/service-sdk/service-token";
+
+await fetch("http://localhost:5002/api/invoices", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${await getServiceToken("ledger")}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    userId: "user-id",
+    items: [{ description: "Convention Ticket", unitPrice: 5000, quantity: 1 }],
+  }),
+});
 ```
+
+Without the SDK, `POST <lanyard>/api/services/token` with `Authorization: ServiceKey <key>` and `{"audience": "ledger"}` answers `{"token": "...", "expiresIn": 60}`. Ledger's audit log records the calling service's slug with each invoice it creates or marks paid.
 
 | Field | Type | Required | Description |
 |---|---|---|---|
@@ -197,14 +202,6 @@ Response:
   "total": 5950
 }
 ```
-
-### Available service endpoints
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/invoices` | Create invoice for a user |
-| `POST` | `/api/invoices/:id/mark-paid` | Mark invoice as paid |
-| `GET` | `/api/invoices/:id/status` | Check invoice status |
 
 ## Webhook Events
 

@@ -16,6 +16,7 @@ export const invoice = pgTable("invoice", {
 	paidAt: timestamp("paid_at"),
 	paymentInstructions: text("payment_instructions"),
 	createdBy: text("created_by").notNull(),
+	createdByService: text("created_by_service"),
 	notes: text("notes"),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),

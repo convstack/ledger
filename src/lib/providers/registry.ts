@@ -55,13 +55,6 @@ export function getProviderByType(type: string): LedgerProvider | null {
 	return factory ? factory() : null;
 }
 
-/**
- * Get all registered provider type names.
- */
-export function getRegisteredProviderTypes(): string[] {
-	return [...providerFactories.keys()];
-}
-
 // Register built-in providers
 import("./stripe").then((m) =>
 	registerProviderType("stripe", () => new m.StripeProvider()),

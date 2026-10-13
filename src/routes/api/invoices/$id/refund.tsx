@@ -2,7 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { invoice, ledgerAuditLog, payment } from "~/db/schema";
-import { getRequestUser, requireServiceOrPermission } from "~/lib/auth";
+import {
+	getRequestCaller,
+	getRequestUser,
+	requirePermission,
+} from "~/lib/auth";
 import { getActiveProvider } from "~/lib/providers/registry";
 
 export const Route = createFileRoute("/api/invoices/$id/refund")({
@@ -25,9 +29,10 @@ export const Route = createFileRoute("/api/invoices/$id/refund")({
 				request: Request;
 				params: { id: string };
 			}) => {
-				const user = getRequestUser(request);
-				const err = await requireServiceOrPermission(request, "ledger:manage");
+				const user = await getRequestUser(request);
+				const err = await requirePermission(request, "ledger:manage");
 				if (err) return err;
+				const caller = await getRequestCaller(request);
 
 				const { eq } = await import("drizzle-orm");
 
@@ -91,6 +96,7 @@ export const Route = createFileRoute("/api/invoices/$id/refund")({
 					entityType: "invoice",
 					entityId: params.id,
 					userId: user?.id || "system",
+					caller: caller?.slug ?? null,
 					details: { amount: inv.total },
 					createdAt: now,
 				});

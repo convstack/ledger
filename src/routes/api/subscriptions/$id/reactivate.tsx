@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { ledgerAuditLog, subscription } from "~/db/schema";
-import { requireServiceOrPermission } from "~/lib/auth";
+import { getRequestCaller, requirePermission } from "~/lib/auth";
 import { getActiveProvider } from "~/lib/providers/registry";
 
 export const Route = createFileRoute("/api/subscriptions/$id/reactivate")({
@@ -24,8 +24,9 @@ export const Route = createFileRoute("/api/subscriptions/$id/reactivate")({
 				request: Request;
 				params: { id: string };
 			}) => {
-				const err = await requireServiceOrPermission(request, "ledger:manage");
+				const err = await requirePermission(request, "ledger:manage");
 				if (err) return err;
+				const caller = await getRequestCaller(request);
 
 				const { eq } = await import("drizzle-orm");
 
@@ -114,6 +115,7 @@ export const Route = createFileRoute("/api/subscriptions/$id/reactivate")({
 					entityType: "subscription",
 					entityId: params.id,
 					userId: "admin",
+					caller: caller?.slug ?? null,
 					createdAt: now,
 				});
 

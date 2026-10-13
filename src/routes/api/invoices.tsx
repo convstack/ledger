@@ -3,9 +3,10 @@ import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { invoice, invoiceItem, ledgerAuditLog } from "~/db/schema";
 import {
+	getRequestCaller,
 	getRequestUser,
-	requireServiceOrPermission,
-	validateServiceKey,
+	requireAnyPermission,
+	requirePermission,
 } from "~/lib/auth";
 import { getUserEmail, sendEmail } from "~/lib/email";
 import { nextInvoiceNumber } from "~/lib/invoice-number";
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/api/invoices")({
 			 * error: 403 Forbidden
 			 */
 			GET: async ({ request }: { request: Request }) => {
-				const err = await requireServiceOrPermission(request, "ledger:manage");
+				const err = await requirePermission(request, "ledger:manage");
 				if (err) return err;
 
 				const { desc, eq } = await import("drizzle-orm");
@@ -81,7 +82,8 @@ export const Route = createFileRoute("/api/invoices")({
 
 			/** @openapi
 			 * summary: Create a new invoice
-			 * auth: staff
+			 * description: Needs ledger:invoices:create or ledger:manage, held by the user or granted to the calling service under Allowed Callers.
+			 * auth: ledger:invoices:create or ledger:manage
 			 * body:
 			 *   userId: string (required) - Target user ID
 			 *   items: Array<{description: string, quantity?: number, unitPrice: number, productId?: string}> (required) - Line items
@@ -101,18 +103,16 @@ export const Route = createFileRoute("/api/invoices")({
 			 * error: 400 Validation error
 			 * error: 401 Unauthorized
 			 * error: 403 Forbidden
+			 * error: 503 Service unavailable while lanyard can't be reached
 			 */
 			POST: async ({ request }: { request: Request }) => {
-				const user = getRequestUser(request);
-				const isService = await validateServiceKey(request);
-
-				if (!isService) {
-					const err = await requireServiceOrPermission(
-						request,
-						"ledger:manage",
-					);
-					if (err) return err;
-				}
+				const err = await requireAnyPermission(request, [
+					"ledger:invoices:create",
+					"ledger:manage",
+				]);
+				if (err) return err;
+				const user = await getRequestUser(request);
+				const caller = await getRequestCaller(request);
 
 				let body: {
 					userId: string;
@@ -197,6 +197,7 @@ export const Route = createFileRoute("/api/invoices")({
 					dueDate: body.dueDate ? new Date(body.dueDate) : null,
 					notes: body.notes || null,
 					createdBy: user?.id || "service",
+					createdByService: caller?.slug ?? null,
 					createdAt: now,
 					updatedAt: now,
 				});
@@ -209,6 +210,7 @@ export const Route = createFileRoute("/api/invoices")({
 					entityType: "invoice",
 					entityId: invoiceId,
 					userId: user?.id || "service",
+					caller: caller?.slug ?? null,
 					details: {
 						invoiceNumber,
 						itemCount: items.length,

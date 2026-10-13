@@ -6,6 +6,7 @@ export const ledgerAuditLog = pgTable("ledger_audit_log", {
 	entityType: text("entity_type").notNull(), // "invoice", "payment", "provider", "subscription"
 	entityId: text("entity_id").notNull(),
 	userId: text("user_id"),
+	caller: text("caller"), // slug of the service whose proof made the call
 	details: jsonb("details"),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 });

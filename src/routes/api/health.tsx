@@ -5,6 +5,7 @@ export const Route = createFileRoute("/api/health")({
 	server: {
 		handlers: {
 			GET: createHandler({
+				skipAuth: true,
 				handler: async () => ({ ok: true, service: "ledger" }),
 			}),
 		},

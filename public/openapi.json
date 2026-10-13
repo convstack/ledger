@@ -286,6 +286,36 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable while lanyard can't be reached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -297,6 +327,7 @@
           "invoices"
         ],
         "summary": "Mark an invoice as paid manually",
+        "description": "Needs ledger:invoices:mark-paid or ledger:manage, held by the user or granted to the calling service under Allowed Callers. The narrow permission only covers invoices the calling service created.",
         "parameters": [
           {
             "name": "id",
@@ -370,6 +401,21 @@
           },
           "404": {
             "description": "Invoice not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable while lanyard can't be reached",
             "content": {
               "application/json": {
                 "schema": {
@@ -489,6 +535,7 @@
           "invoices"
         ],
         "summary": "Get invoice payment status (service-to-service)",
+        "description": "Needs ledger:invoices:status or ledger:manage, held by the user or granted to the calling service under Allowed Callers. The narrow permission only covers invoices the calling service created.",
         "parameters": [
           {
             "name": "id",
@@ -539,8 +586,38 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Invoice not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable while lanyard can't be reached",
             "content": {
               "application/json": {
                 "schema": {
@@ -687,6 +764,7 @@
           "invoices"
         ],
         "summary": "Create a new invoice",
+        "description": "Needs ledger:invoices:create or ledger:manage, held by the user or granted to the calling service under Allowed Callers.",
         "requestBody": {
           "required": true,
           "content": {
@@ -788,6 +866,21 @@
           },
           "403": {
             "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable while lanyard can't be reached",
             "content": {
               "application/json": {
                 "schema": {

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "~/db";
 import { invoice } from "~/db/schema";
-import { getRequestUser } from "~/lib/auth";
+import { requireUser } from "~/lib/auth";
 import { getActiveProvider } from "~/lib/providers/registry";
 
 export const Route = createFileRoute("/api/my/invoices/$id/actions")({
@@ -22,13 +22,8 @@ export const Route = createFileRoute("/api/my/invoices/$id/actions")({
 				request: Request;
 				params: { id: string };
 			}) => {
-				const user = getRequestUser(request);
-				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
-				}
+				const user = await requireUser(request);
+				if (user instanceof Response) return user;
 
 				const { eq, and } = await import("drizzle-orm");
 

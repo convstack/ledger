@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { nanoid } from "nanoid";
 import { db } from "~/db";
 import { ledgerAuditLog, product, subscription } from "~/db/schema";
-import { getRequestUser } from "~/lib/auth";
+import { requireUser } from "~/lib/auth";
 import { getActiveProvider } from "~/lib/providers/registry";
 
 export const Route = createFileRoute("/api/my/subscribe")({
@@ -26,13 +26,8 @@ export const Route = createFileRoute("/api/my/subscribe")({
 			 * error: 501 Active provider does not support subscriptions
 			 */
 			POST: async ({ request }: { request: Request }) => {
-				const user = getRequestUser(request);
-				if (!user) {
-					return new Response(JSON.stringify({ error: "Unauthorized" }), {
-						status: 401,
-						headers: { "Content-Type": "application/json" },
-					});
-				}
+				const user = await requireUser(request);
+				if (user instanceof Response) return user;
 
 				let body: { productId: string };
 				try {

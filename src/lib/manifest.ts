@@ -716,6 +716,11 @@ export function buildLedgerManifest(
 		},
 		widgets: [],
 		pages,
-		permissions: ["ledger:manage"],
+		permissions: [
+			"ledger:manage",
+			"ledger:invoices:create",
+			"ledger:invoices:status",
+			"ledger:invoices:mark-paid",
+		],
 	};
 }
